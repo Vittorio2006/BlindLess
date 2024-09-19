@@ -1,5 +1,5 @@
-streamlit
-opencv-python
+streamlit-webrtc
+opencv-python-headless
 torch
 numpy
 ultralytics
