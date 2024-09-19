@@ -22,4 +22,4 @@ class VideoTransformer(VideoTransformerBase):
         return img_with_boxes
 
 # Usa Streamlit WebRTC per gestire il flusso della webcam
-webrtc_streamer(key="example", video_transformer=VideoTransformer, media_stream_constraints={"video": True, "audio": False})
+webrtc_streamer(key="example", video_transformer_factory=VideoTransformer, media_stream_constraints={"video": True, "audio": False})
