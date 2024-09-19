@@ -1,7 +1,7 @@
 import streamlit as st
 import torch
 import numpy as np
-from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
+from streamlit_webrtc import webrtc_streamer, VideoTransformerBase, ClientSettings
 
 # Carica il modello pre-addestrato YOLOv5
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
@@ -21,5 +21,16 @@ class VideoTransformer(VideoTransformerBase):
 
         return img_with_boxes
 
+# Imposta i server STUN
+client_settings = ClientSettings(
+    stun_servers=["stun:stun.l.google.com:19302"],
+    turn_servers=[],
+)
+
 # Usa Streamlit WebRTC per gestire il flusso della webcam
-webrtc_streamer(key="example", video_transformer_factory=VideoTransformer, media_stream_constraints={"video": True, "audio": False})
+webrtc_streamer(
+    key="example",
+    video_transformer_factory=VideoTransformer,
+    media_stream_constraints={"video": True, "audio": False},
+    client_settings=client_settings,
+)
