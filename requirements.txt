@@ -3,3 +3,4 @@ opencv-python
 torch
 numpy
 ultralytics
+streamlit_webrtc

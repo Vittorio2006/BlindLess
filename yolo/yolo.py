@@ -1,48 +1,25 @@
 import streamlit as st
-import cv2
 import torch
 import numpy as np
+from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 
 # Carica il modello pre-addestrato YOLOv5
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
-# Imposta il titolo dell'app
-st.title("Real-Time Object Detection con YOLOv5")
+st.title("Rilevamento Oggetti in Tempo Reale con YOLOv5")
 
-# Checkbox per avviare/arrestare la webcam
-run = st.checkbox('Avvia webcam')
+class VideoTransformer(VideoTransformerBase):
+    def transform(self, frame):
+        # Converti il frame in un array numpy
+        img = frame.to_ndarray(format="bgr24")
 
-# Placeholder per l'immagine elaborata
-FRAME_WINDOW = st.image([])
+        # Effettua l'object detection
+        results = model(img)
 
-# Variabile cap solo se la webcam è avviata
-cap = None
+        # Disegna i bounding box
+        img_with_boxes = np.squeeze(results.render())
 
-if run:
-    # Inizializza la webcam
-    cap = cv2.VideoCapture(2)
-    
-    # Loop per elaborare il flusso video in tempo reale
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            st.error("Errore nell'acquisizione del video.")
-            break
+        return img_with_boxes
 
-        # Converti il frame BGR in RGB per la visualizzazione
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-        # YOLOv5: Effettua l'object detection sul frame
-        results = model(frame)
-
-        # Disegna i bounding box e le etichette sul frame
-        frame_with_boxes = np.squeeze(results.render())  # results.render() restituisce una lista
-        
-        # Mostra il frame con i bounding box nella UI
-        FRAME_WINDOW.image(frame_with_boxes, channels="RGB")
-    
-    # Rilascia la videocamera al termine
-    cap.release()
-
-else:
-    st.write("Premi il checkbox qui sopra per avviare la webcam.")
+# Usa Streamlit WebRTC per gestire il flusso della webcam
+webrtc_streamer(key="example", video_transformer=VideoTransformer, media_stream_constraints={"video": True, "audio": False})
