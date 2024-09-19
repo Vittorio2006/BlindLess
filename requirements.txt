@@ -2,5 +2,5 @@ streamlit
 opencv-python
 torch
 numpy
-ultralytics
+ultralytics>=8.2.34
 streamlit_webrtc
