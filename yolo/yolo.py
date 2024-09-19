@@ -1,7 +1,7 @@
 import streamlit as st
 import torch
 import numpy as np
-from streamlit_webrtc import webrtc_streamer, VideoProcessorBase
+from streamlit_webrtc import webrtc_streamer, VideoProcessorBase, VideoFrame
 
 # Carica il modello pre-addestrato YOLOv5
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
@@ -12,7 +12,7 @@ class VideoProcessor(VideoProcessorBase):
     def __init__(self):
         super().__init__()
 
-    def transform(self, frame):
+    def recv(self, frame: VideoFrame) -> VideoFrame:
         # Converti il frame in un array numpy
         img = frame.to_ndarray(format="bgr24")
 
@@ -22,7 +22,8 @@ class VideoProcessor(VideoProcessorBase):
         # Disegna i bounding box
         img_with_boxes = np.squeeze(results.render())
 
-        return img_with_boxes
+        # Converti di nuovo in un frame VideoFrame
+        return VideoFrame.from_ndarray(img_with_boxes, format="bgr24")
 
 # Usa Streamlit WebRTC per gestire il flusso della webcam
 webrtc_streamer(
