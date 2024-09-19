@@ -20,7 +20,7 @@ cap = None
 
 if run:
     # Inizializza la webcam
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     
     # Loop per elaborare il flusso video in tempo reale
     while True:
