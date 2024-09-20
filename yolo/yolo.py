@@ -79,3 +79,9 @@ function captureFrame() {
 
 setInterval(captureFrame, 100);  // Cattura un frame ogni 100ms
 </script>
+
+<img id="processedFrame" style="width: 100%;"/>
+"""  # Qui chiudo la stringa correttamente
+
+# Inserisci il codice HTML in Streamlit
+st.components.v1.html(html_code)
