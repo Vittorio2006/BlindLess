@@ -6,4 +6,4 @@ pillow
 numpy
 ultralytics>=8.2.34
 python-multipart
-opencv-python
+opencv-python-headless
