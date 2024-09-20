@@ -1,47 +1,13 @@
 import streamlit as st
-from fastapi import FastAPI, File, UploadFile
-from starlette.responses import StreamingResponse
 import torch
-import io
-from PIL import Image
 import numpy as np
-import uvicorn
-from threading import Thread
+from PIL import Image
+import cv2
+import time
 
 # Carica il modello pre-addestrato YOLOv5
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
-# Crea un'app FastAPI
-app = FastAPI()
-
-# Funzione per processare il frame con YOLOv5
-@app.post("/process_frame")
-async def process_frame(file: UploadFile = File(...)):
-    image = Image.open(file.file)
-    image_np = np.array(image)
-
-    # Effettua l'object detection con YOLOv5
-    results = model(image_np)
-
-    # Converti l'immagine con i bounding box in un buffer
-    img_with_boxes = np.squeeze(results.render())
-    img_pil = Image.fromarray(img_with_boxes)
-    buf = io.BytesIO()
-    img_pil.save(buf, format='PNG')
-    buf.seek(0)
-
-    return StreamingResponse(buf, media_type="image/png")
-
-# Funzione per eseguire FastAPI in background su una porta diversa
-def run_fastapi():
-    uvicorn.run(app, host="0.0.0.0", port=8001)  # Cambia la porta da 8000 a 8001
-
-# Avvia FastAPI in un thread separato
-thread = Thread(target=run_fastapi)
-thread.daemon = True
-thread.start()
-
-# Interfaccia utente con Streamlit
 st.title("Rilevamento Oggetti in Tempo Reale con YOLOv5")
 
 # Aggiungi un componente HTML per accedere alla fotocamera e inviare i frame al server
@@ -65,28 +31,64 @@ function captureFrame() {
   // Disegna il video nel canvas
   context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
   
-  // Converti il frame in un blob e invia al server
+  // Converti il frame in un blob e invia al server come stringa base64
   canvasElement.toBlob((blob) => {
-    const formData = new FormData();
-    formData.append('frame', blob, 'frame.png');
-    
-    fetch('http://localhost:8001/process_frame', {  // Aggiornato a 8001
-      method: 'POST',
-      body: formData
-    }).then(response => response.blob())
-      .then(processedBlob => {
-        const imgUrl = URL.createObjectURL(processedBlob);
-        document.getElementById('processedFrame').src = imgUrl;
-      });
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onloadend = function() {
+      const base64data = reader.result;
+      fetch('/process_frame', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ image: base64data })
+      }).then(response => response.json())
+        .then(data => {
+          document.getElementById('processedFrame').src = data.processed_image;
+        });
+    };
   }, 'image/png');
 }
 
-// Cattura e invia un frame ogni 500ms
-setInterval(captureFrame, 500);
+setInterval(captureFrame, 500);  // Cattura un frame ogni 500ms
 </script>
 
 <img id="processedFrame" style="width: 100%;"/>
 """
 
 # Inserisci il codice HTML in Streamlit
-st.components.v1.html(html_code)
+st.components.v1.html(html_code, height=300)
+
+# Definisci il punto finale per il caricamento dei frame
+if st.experimental_get_query_params().get("video_process") == ["true"]:
+    import base64
+    import json
+
+    # Riceve il frame in formato base64 e lo processa con YOLOv5
+    data = st.experimental_get_query_params()
+    image_base64 = data.get("image")[0]
+    
+    # Decodifica l'immagine
+    header, image_base64 = image_base64.split(',')
+    img_data = base64.b64decode(image_base64)
+    image = Image.open(io.BytesIO(img_data))
+    image_np = np.array(image)
+
+    # Effettua l'object detection con YOLOv5
+    results = model(image_np)
+
+    # Converti l'immagine con i bounding box
+    img_with_boxes = np.squeeze(results.render())
+
+    # Converti l'immagine in base64
+    img_pil = Image.fromarray(img_with_boxes)
+    buf = io.BytesIO()
+    img_pil.save(buf, format="PNG")
+    img_bytes = buf.getvalue()
+    img_base64 = base64.b64encode(img_bytes).decode("utf-8")
+
+    # Restituisci l'immagine elaborata come risposta JSON
+    st.json({
+        "processed_image": f"data:image/png;base64,{img_base64}"
+    })
