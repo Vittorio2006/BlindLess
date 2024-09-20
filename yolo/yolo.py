@@ -49,19 +49,25 @@ setInterval(captureFrame, 500);
 st.components.v1.html(html_code, height=500)
 
 def process_frame(image_base64):
+    # Decodifica l'immagine da base64
     header, image_base64 = image_base64.split(',')
     img_data = base64.b64decode(image_base64)
     image = Image.open(io.BytesIO(img_data)).convert("RGB")  # Assicurati che l'immagine sia in RGB
     image_np = np.array(image)
 
     # Applica YOLOv5 per il rilevamento degli oggetti
-    results = model.predict(image_np, show=True)  # Usa show=True per visualizzare i risultati (opzionale)
-    
+    results = model.predict(image_np)  # Non usare show=True qui
+
+    # Stampa i risultati per il debug
+    print("Risultati:", results)
+
     # Controlla se ci sono risultati
-    if results:
+    if results and len(results) > 0:
         img_with_boxes = results[0].plot()  # Ritorna l'immagine con i bounding box
+        print("Oggetti rilevati:", results[0].names)
     else:
         img_with_boxes = image_np  # Se non ci sono risultati, ritorna l'immagine originale
+        print("Nessun oggetto rilevato.")
 
     img_pil = Image.fromarray(img_with_boxes)
 
