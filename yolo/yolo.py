@@ -58,6 +58,10 @@ navigator.mediaDevices.getUserMedia({ video: true })
   });
 
 function captureFrame() {
+  // Imposta la risoluzione del canvas in base alla dimensione del video
+  canvasElement.width = videoElement.videoWidth;
+  canvasElement.height = videoElement.videoHeight;
+
   // Disegna il video nel canvas
   context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
   
@@ -66,7 +70,7 @@ function captureFrame() {
     const formData = new FormData();
     formData.append('frame', blob, 'frame.png');
     
-    fetch('/process_frame', {
+    fetch('http://localhost:8000/process_frame', {
       method: 'POST',
       body: formData
     }).then(response => response.blob())
@@ -77,11 +81,12 @@ function captureFrame() {
   }, 'image/png');
 }
 
-setInterval(captureFrame, 100);  // Cattura un frame ogni 100ms
+// Cattura e invia un frame ogni 500ms
+setInterval(captureFrame, 500);
 </script>
 
 <img id="processedFrame" style="width: 100%;"/>
-"""  # Qui chiudo la stringa correttamente
+"""
 
 # Inserisci il codice HTML in Streamlit
 st.components.v1.html(html_code)
