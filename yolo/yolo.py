@@ -2,8 +2,8 @@ import streamlit as st
 import torch
 import numpy as np
 from PIL import Image
-import cv2
-import time
+import io
+import base64
 
 # Carica il modello pre-addestrato YOLOv5
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
@@ -61,13 +61,11 @@ setInterval(captureFrame, 500);  // Cattura un frame ogni 500ms
 st.components.v1.html(html_code, height=300)
 
 # Definisci il punto finale per il caricamento dei frame
-if st.experimental_get_query_params().get("video_process") == ["true"]:
-    import base64
-    import json
+query_params = st.query_params
 
+if query_params.get("video_process") == ["true"]:
     # Riceve il frame in formato base64 e lo processa con YOLOv5
-    data = st.experimental_get_query_params()
-    image_base64 = data.get("image")[0]
+    image_base64 = query_params.get("image")[0]
     
     # Decodifica l'immagine
     header, image_base64 = image_base64.split(',')
