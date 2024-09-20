@@ -1,8 +1,8 @@
 streamlit
-opencv-python
+fastapi
+uvicorn
+starlette
 torch
+pillow
 numpy
 ultralytics>=8.2.34
-univcorn
-aiofiles
-python-multipart
