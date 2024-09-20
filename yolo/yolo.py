@@ -1,38 +1,40 @@
 import streamlit as st
+import cv2
 import torch
 import numpy as np
-from streamlit_webrtc import webrtc_streamer, VideoProcessorBase
+from PIL import Image
+from streamlit.components.v1 import html
 
 # Carica il modello pre-addestrato YOLOv5
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
 st.title("Rilevamento Oggetti in Tempo Reale con YOLOv5")
 
-class VideoProcessor(VideoProcessorBase):
-    def __init__(self):
-        super().__init__()
+# Aggiungi un componente HTML per accedere alla fotocamera
+html_code = """
+<video autoplay playsinline></video>
+<script>
+const videoElement = document.querySelector('video');
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then((stream) => {
+    videoElement.srcObject = stream;
+  });
+</script>
+"""
 
-    def transform(self, frame):
-        # Converti il frame in un array numpy
-        img = frame.to_ndarray(format="bgr24")
+html(html_code)
 
-        # Effettua l'object detection
-        results = model(img)
+# Simula l'acquisizione del video caricando un'immagine di esempio (o implementa un modo per trasferire il video stream)
+uploaded_file = st.file_uploader("Carica un'immagine o un frame video", type=["jpg", "jpeg", "png"])
 
-        # Disegna i bounding box
-        img_with_boxes = np.squeeze(results.render())
+if uploaded_file is not None:
+    img = np.array(Image.open(uploaded_file))
 
-        return img_with_boxes
+    # Effettua l'object detection
+    results = model(img)
 
-# Imposta le configurazioni RTC
-rtc_configuration = {
-    "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
-}
+    # Disegna i bounding box
+    img_with_boxes = np.squeeze(results.render())
 
-# Usa Streamlit WebRTC per gestire il flusso della webcam
-webrtc_streamer(
-    key="example",
-    video_processor_factory=VideoProcessor,
-    media_stream_constraints={"video": True, "audio": False},
-    rtc_configuration=rtc_configuration,
-)
+    # Mostra l'immagine elaborata
+    st.image(img_with_boxes, caption='Rilevamento Oggetti', use_column_width=True)
