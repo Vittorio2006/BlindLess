@@ -6,7 +6,7 @@ import io
 import base64
 
 # Carica il modello pre-addestrato YOLOv5
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True, trust_repo=True)
 
 st.title("Rilevamento Oggetti in Tempo Reale con YOLOv5")
 
