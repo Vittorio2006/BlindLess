@@ -3,4 +3,4 @@ opencv-python
 torch
 numpy
 ultralytics>=8.2.34
-streamlit_webrtc
+
