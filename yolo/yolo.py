@@ -1,40 +1,81 @@
 import streamlit as st
-import cv2
+from fastapi import FastAPI, File, UploadFile
+from starlette.responses import StreamingResponse
 import torch
-import numpy as np
+import io
 from PIL import Image
-from streamlit.components.v1 import html
+import numpy as np
+import uvicorn
+from threading import Thread
 
 # Carica il modello pre-addestrato YOLOv5
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
+# Crea un'app FastAPI
+app = FastAPI()
+
+# Funzione per processare il frame con YOLOv5
+@app.post("/process_frame")
+async def process_frame(file: UploadFile = File(...)):
+    image = Image.open(file.file)
+    image_np = np.array(image)
+
+    # Effettua l'object detection con YOLOv5
+    results = model(image_np)
+
+    # Converti l'immagine con i bounding box in un buffer
+    img_with_boxes = np.squeeze(results.render())
+    img_pil = Image.fromarray(img_with_boxes)
+    buf = io.BytesIO()
+    img_pil.save(buf, format='PNG')
+    buf.seek(0)
+
+    return StreamingResponse(buf, media_type="image/png")
+
+# Funzione per eseguire FastAPI in background
+def run_fastapi():
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+# Avvia FastAPI in un thread separato
+thread = Thread(target=run_fastapi)
+thread.daemon = True
+thread.start()
+
+# Interfaccia utente con Streamlit
 st.title("Rilevamento Oggetti in Tempo Reale con YOLOv5")
 
-# Aggiungi un componente HTML per accedere alla fotocamera
+# Aggiungi un componente HTML per accedere alla fotocamera e inviare i frame al server
 html_code = """
-<video autoplay playsinline></video>
+<video id="videoElement" autoplay playsinline></video>
+<canvas id="canvasElement" style="display: none;"></canvas>
 <script>
 const videoElement = document.querySelector('video');
+const canvasElement = document.getElementById('canvasElement');
+const context = canvasElement.getContext('2d');
 navigator.mediaDevices.getUserMedia({ video: true })
   .then((stream) => {
     videoElement.srcObject = stream;
   });
+
+function captureFrame() {
+  // Disegna il video nel canvas
+  context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+  
+  // Converti il frame in un blob e invia al server
+  canvasElement.toBlob((blob) => {
+    const formData = new FormData();
+    formData.append('frame', blob, 'frame.png');
+    
+    fetch('/process_frame', {
+      method: 'POST',
+      body: formData
+    }).then(response => response.blob())
+      .then(processedBlob => {
+        const imgUrl = URL.createObjectURL(processedBlob);
+        document.getElementById('processedFrame').src = imgUrl;
+      });
+  }, 'image/png');
+}
+
+setInterval(captureFrame, 100);  // Cattura un frame ogni 100ms
 </script>
-"""
-
-html(html_code)
-
-# Simula l'acquisizione del video caricando un'immagine di esempio (o implementa un modo per trasferire il video stream)
-uploaded_file = st.file_uploader("Carica un'immagine o un frame video", type=["jpg", "jpeg", "png"])
-
-if uploaded_file is not None:
-    img = np.array(Image.open(uploaded_file))
-
-    # Effettua l'object detection
-    results = model(img)
-
-    # Disegna i bounding box
-    img_with_boxes = np.squeeze(results.render())
-
-    # Mostra l'immagine elaborata
-    st.image(img_with_boxes, caption='Rilevamento Oggetti', use_column_width=True)
