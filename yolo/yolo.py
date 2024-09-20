@@ -32,9 +32,9 @@ async def process_frame(file: UploadFile = File(...)):
 
     return StreamingResponse(buf, media_type="image/png")
 
-# Funzione per eseguire FastAPI in background
+# Funzione per eseguire FastAPI in background su una porta diversa
 def run_fastapi():
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)  # Cambia la porta da 8000 a 8001
 
 # Avvia FastAPI in un thread separato
 thread = Thread(target=run_fastapi)
@@ -70,7 +70,7 @@ function captureFrame() {
     const formData = new FormData();
     formData.append('frame', blob, 'frame.png');
     
-    fetch('http://localhost:8000/process_frame', {
+    fetch('http://localhost:8001/process_frame', {  // Aggiornato a 8001
       method: 'POST',
       body: formData
     }).then(response => response.blob())
