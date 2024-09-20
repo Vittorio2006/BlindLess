@@ -4,18 +4,20 @@ import numpy as np
 from PIL import Image
 import io
 import base64
+import cv2
+import time
 
 # Carica il modello pre-addestrato YOLOv5
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True, trust_repo=True)
+model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
 st.title("Rilevamento Oggetti in Tempo Reale con YOLOv5")
 
-# Aggiungi un componente HTML per accedere alla fotocamera e inviare i frame al server
+# Aggiungi un componente HTML per accedere alla webcam e inviare i frame
 html_code = """
-<video id="videoElement" autoplay playsinline></video>
-<canvas id="canvasElement" style="display: none;"></canvas>
+<video id="videoElement" autoplay playsinline style="display:none;"></video>
+<canvas id="canvasElement"></canvas>
 <script>
-const videoElement = document.querySelector('video');
+const videoElement = document.querySelector('#videoElement');
 const canvasElement = document.getElementById('canvasElement');
 const context = canvasElement.getContext('2d');
 navigator.mediaDevices.getUserMedia({ video: true })
@@ -30,63 +32,63 @@ function captureFrame() {
 
   // Disegna il video nel canvas
   context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
-  
-  // Converti il frame in un blob e invia al server come stringa base64
-  canvasElement.toBlob((blob) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(blob);
-    reader.onloadend = function() {
-      const base64data = reader.result;
-      fetch('/process_frame', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ image: base64data })
-      }).then(response => response.json())
-        .then(data => {
-          document.getElementById('processedFrame').src = data.processed_image;
-        });
-    };
-  }, 'image/png');
+
+  // Converti il frame in base64 e invialo al server
+  const dataUrl = canvasElement.toDataURL('image/png');
+  fetch('/process_frame', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ image: dataUrl })
+  })
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById('processedFrame').src = data.processed_image;
+  });
 }
 
-setInterval(captureFrame, 500);  // Cattura un frame ogni 500ms
+// Cattura un frame ogni 500ms
+setInterval(captureFrame, 500);
 </script>
 
 <img id="processedFrame" style="width: 100%;"/>
 """
 
 # Inserisci il codice HTML in Streamlit
-st.components.v1.html(html_code, height=300)
+st.components.v1.html(html_code, height=500)
 
-# Definisci il punto finale per il caricamento dei frame
-query_params = st.query_params
-
-if query_params.get("video_process") == ["true"]:
-    # Riceve il frame in formato base64 e lo processa con YOLOv5
-    image_base64 = query_params.get("image")[0]
-    
-    # Decodifica l'immagine
+# Funzione per processare i frame inviati in base64
+def process_frame(image_base64):
+    # Decodifica l'immagine da base64
     header, image_base64 = image_base64.split(',')
     img_data = base64.b64decode(image_base64)
     image = Image.open(io.BytesIO(img_data))
     image_np = np.array(image)
 
-    # Effettua l'object detection con YOLOv5
+    # Applica YOLOv5 per il rilevamento degli oggetti
     results = model(image_np)
 
-    # Converti l'immagine con i bounding box
+    # Ottieni l'immagine con i bounding box sovrapposti
     img_with_boxes = np.squeeze(results.render())
 
-    # Converti l'immagine in base64
+    # Converti l'immagine in formato PIL
     img_pil = Image.fromarray(img_with_boxes)
+
+    # Converti l'immagine con i bounding box in base64 per ritornarla al client
     buf = io.BytesIO()
     img_pil.save(buf, format="PNG")
     img_bytes = buf.getvalue()
     img_base64 = base64.b64encode(img_bytes).decode("utf-8")
 
-    # Restituisci l'immagine elaborata come risposta JSON
+    return img_base64
+
+# Simula il processo di ricezione di un frame dal browser
+query_params = st.experimental_get_query_params()
+
+if 'image' in query_params:
+    image_base64 = query_params['image'][0]
+    processed_img_base64 = process_frame(image_base64)
+    
+    # Restituisci l'immagine elaborata con YOLOv5 come risposta JSON
     st.json({
-        "processed_image": f"data:image/png;base64,{img_base64}"
+        "processed_image": f"data:image/png;base64,{processed_img_base64}"
     })
