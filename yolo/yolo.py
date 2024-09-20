@@ -81,8 +81,8 @@ def process_frame(image_base64):
 
     return img_base64
 
-# Simula il processo di ricezione di un frame dal browser
-query_params = st.experimental_get_query_params()
+# Usa il nuovo metodo st.query_params
+query_params = st.query_params
 
 if 'image' in query_params:
     image_base64 = query_params['image'][0]
