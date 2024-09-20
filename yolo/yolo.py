@@ -9,7 +9,7 @@ import time
 from ultralytics import YOLO  # Importa direttamente la libreria ultralytics
 
 # Carica il modello pre-addestrato YOLOv5
-model = YOLO('yolov5s.pt')  # Carica il modello YOLOv5
+model = YOLO('yolov5su.pt')  # Carica il modello YOLOv5
 
 st.title("Rilevamento Oggetti in Tempo Reale con YOLOv5")
 
