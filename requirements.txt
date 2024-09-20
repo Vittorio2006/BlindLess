@@ -1,8 +1,6 @@
 streamlit
-uvicorn
-starlette
 torch
 pillow
 numpy
 ultralytics>=8.2.34
-python-multipart
+opencv-python
