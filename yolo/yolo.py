@@ -2,7 +2,6 @@ import streamlit as st
 import numpy as np
 import cv2
 from ultralytics import YOLO
-import time
 
 # Carica il modello YOLO
 @st.cache_resource
@@ -33,8 +32,8 @@ if st.button('Ferma Rilevamento'):
 
 # Acquisizione video dalla webcam
 if st.session_state.detecting:
-    video_source = cv2.VideoCapture(0)  # Usa l'indice corretto per la tua webcam
-
+    video_source = cv2.VideoCapture(0)
+    
     frame_placeholder = st.empty()  # Placeholder per l'immagine
 
     while st.session_state.detecting:
@@ -51,8 +50,5 @@ if st.session_state.detecting:
 
         # Mostra l'immagine annotata nel placeholder
         frame_placeholder.image(annotated_frame, channels="RGB", use_column_width=True)
-
-        # Attendi brevemente per consentire un aggiornamento fluido
-        time.sleep(0.1)
 
     video_source.release()
