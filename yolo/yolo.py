@@ -30,12 +30,12 @@ if st.button('Inizia Rilevamento Oggetti'):
 if st.button('Ferma Rilevamento'):
     st.session_state.detecting = False
 
-# Acquisizione video dalla webcam
+# Acquisizione video dalla webcam solo se il rilevamento è attivo
 if st.session_state.detecting:
     video_source = cv2.VideoCapture(0)
-    
     frame_placeholder = st.empty()  # Placeholder per l'immagine
 
+    # Funzione per gestire il ciclo di acquisizione video
     while st.session_state.detecting:
         ret, frame = video_source.read()
         if not ret:
