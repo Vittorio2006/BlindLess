@@ -2,7 +2,6 @@ import streamlit as st
 import numpy as np
 import cv2
 from ultralytics import YOLO
-import time
 
 # Carica il modello YOLO
 @st.cache_resource
@@ -31,32 +30,24 @@ if st.button('Inizia Rilevamento Oggetti'):
 if st.button('Ferma Rilevamento'):
     st.session_state.detecting = False
 
-# Acquisizione dell'immagine dalla webcam
+# Acquisizione video dalla webcam
 if st.session_state.detecting:
-    frame = st.camera_input("Scatta una foto", key="camera_input")
+    video_source = cv2.VideoCapture(0)
+    frame_placeholder = st.empty()  # Placeholder per l'immagine
 
-    if frame is not None:
-        # Leggi l'immagine
-        img = cv2.imdecode(np.frombuffer(frame.read(), np.uint8), cv2.IMREAD_COLOR)
-
-        # Processa il frame
-        annotated_frame = process_frame(img)
+    while st.session_state.detecting:
+        ret, frame = video_source.read()
+        if not ret:
+            st.error("Errore nell'acquisizione del video.")
+            break
 
         # Converti da BGR a RGB
-        annotated_frame = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        # Mostra l'immagine annotata
-        st.image(annotated_frame, channels="RGB", use_column_width=True)
+        # Processa il frame
+        annotated_frame = process_frame(frame)
 
-    # Aggiungi un pulsante per scattare foto ripetutamente
-    if st.button('Scatta Foto'):
-        # Ciclo per scattare più foto
-        for _ in range(5):  # Ad esempio, scatta 5 foto
-            time.sleep(0.5)  # Attendi un po' tra gli scatti
-            frame = st.camera_input("Scatta una foto", key="camera_input")
+        # Mostra l'immagine annotata nel placeholder
+        frame_placeholder.image(annotated_frame, channels="RGB", use_column_width=True)
 
-            if frame is not None:
-                img = cv2.imdecode(np.frombuffer(frame.read(), np.uint8), cv2.IMREAD_COLOR)
-                annotated_frame = process_frame(img)
-                annotated_frame = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
-                st.image(annotated_frame, channels="RGB", use_column_width=True)
+    video_source.release()
