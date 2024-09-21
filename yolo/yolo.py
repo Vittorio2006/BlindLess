@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
-import cv2
 from ultralytics import YOLO
+import cv2
 
 # Carica il modello YOLO
 @st.cache_resource
@@ -30,25 +30,19 @@ if st.button('Inizia Rilevamento Oggetti'):
 if st.button('Ferma Rilevamento'):
     st.session_state.detecting = False
 
-# Acquisizione video dalla webcam solo se il rilevamento è attivo
+# Acquisizione dell'immagine dalla webcam
 if st.session_state.detecting:
-    video_source = cv2.VideoCapture(0)
-    frame_placeholder = st.empty()  # Placeholder per l'immagine
+    frame = st.camera_input("Scatta una foto", key="camera_input")
 
-    # Funzione per gestire il ciclo di acquisizione video
-    while st.session_state.detecting:
-        ret, frame = video_source.read()
-        if not ret:
-            st.error("Errore nell'acquisizione del video.")
-            break
-
-        # Converti da BGR a RGB
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    if frame is not None:
+        # Leggi l'immagine
+        img = cv2.imdecode(np.frombuffer(frame.read(), np.uint8), cv2.IMREAD_COLOR)
 
         # Processa il frame
-        annotated_frame = process_frame(frame)
+        annotated_frame = process_frame(img)
 
-        # Mostra l'immagine annotata nel placeholder
-        frame_placeholder.image(annotated_frame, channels="RGB", use_column_width=True)
+        # Converti da BGR a RGB
+        annotated_frame = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
 
-    video_source.release()
+        # Mostra l'immagine annotata
+        st.image(annotated_frame, channels="RGB", use_column_width=True)
