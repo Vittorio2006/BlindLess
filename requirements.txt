@@ -1,8 +1,8 @@
 streamlit
-opencv-python
+uvicorn
+starlette
 torch
+pillow
 numpy
 ultralytics>=8.2.34
 streamlit_webrtc
-pyttsx3
-winsound
