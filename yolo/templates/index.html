@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOLO Object Detection</title>
+</head>
+<body>
+    <h1>YOLO Object Detection</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <script>
+        // Funzione per accedere alla webcam del client
+        async function startVideo() {
+            try {
+                const video = document.getElementById('video');
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+
+                // Invia il feed video al server Flask per l'elaborazione
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+
+                // Invia i frame al server Flask
+                setInterval(() => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    // Converti il frame in un blob e invialo al server
+                    canvas.toBlob((blob) => {
+                        const formData = new FormData();
+                        formData.append('frame', blob, 'frame.jpg');
+                        
+                        fetch('/process_frame', {
+                            method: 'POST',
+                            body: formData
+                        });
+                    }, 'image/jpeg');
+                }, 100); // Invia un frame ogni 100ms
+            } catch (error) {
+                console.error('Errore nell’accesso alla webcam: ', error);
+            }
+        }
+
+        // Avvia il video all'apertura della pagina
+        window.onload = () => {
+            startVideo();
+        };
+    </script>
+</body>
+</html>
