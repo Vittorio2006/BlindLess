@@ -13,10 +13,10 @@ jobs:
       - name: Checkout repository content
         uses: actions/checkout@v4
         
-      - name: Set up Jekyll
-        uses: actions/setup-ruby@v1
+      - name: Set up Ruby
+        uses: actions/setup-ruby@v2  # Aggiorna la versione dell'azione
         with:
-          ruby-version: '3.x'
+          ruby-version: '3.x'  # Verifica se vuoi una specifica versione di Ruby
 
       - name: Install dependencies
         run: bundle install
