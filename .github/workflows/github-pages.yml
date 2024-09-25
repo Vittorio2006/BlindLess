@@ -3,7 +3,7 @@ name: GitHub Pages
 on:
   push:
     branches:
-      - html # Cambia questo al branch che vuoi pubblicare, ad esempio main o html
+      - html  # Cambia con il branch che desideri pubblicare
 
 jobs:
   build:
@@ -12,16 +12,15 @@ jobs:
     steps:
       - name: Checkout repository content
         uses: actions/checkout@v4
-        
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1  # Usa la versione corretta per gestire Ruby
-        with:
-          ruby-version: '3.x'  # Cambia con la versione di Ruby
 
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2.0'  # Sostituisci con una versione supportata, es. '3.2.0'
 
       - name: Install dependencies
         run: bundle install
-        
+
       - name: Build the site
         run: bundle exec jekyll build
 
