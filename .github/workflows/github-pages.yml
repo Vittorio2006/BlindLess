@@ -14,9 +14,10 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Set up Ruby
-        uses: actions/setup-ruby@v2  # Aggiorna la versione dell'azione
+        uses: ruby/setup-ruby@v1  # Usa la versione corretta per gestire Ruby
         with:
-          ruby-version: '3.x'  # Verifica se vuoi una specifica versione di Ruby
+          ruby-version: '3.x'  # Cambia con la versione di Ruby
+
 
       - name: Install dependencies
         run: bundle install
