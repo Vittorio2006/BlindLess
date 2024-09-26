@@ -40,15 +40,8 @@ function enableCam() {
         audio: false,
         video: {
             facingMode: "environment",  // Ensure we use the rear camera
-
-            height: { min: 640, ideal: 720, max: 1920 },
-            width: { min: 480, ideal: 1280, max: 1080 },
-
-            frameRate: { 
-                min: 10,
-                ideal: 25,
-                max: 30
-            }
+            height: { ideal: 720 },
+            width: { ideal: 1280 }
         }
      };
 
