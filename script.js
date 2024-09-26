@@ -120,6 +120,8 @@ function predictWebcam() {
         // Clear any previous highlighters or labels.
         clearBoundingBoxes();
 
+        drawBoundingBox();
+
         // Loop through predictions and draw bounding boxes for confident detections
         predictions.forEach(prediction => {
             if (prediction.score > 0.60) {
@@ -173,7 +175,7 @@ function announcePosition(object, position) {
     detections.forEach(detection => {
         const detectedClass = detection.class;
         
-        drawBoundingBox();
+
 
         if(interestingObjects.includes(detectedClass)){
             // Define message in English
