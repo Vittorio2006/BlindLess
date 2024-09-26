@@ -8,6 +8,21 @@ let lastSpoken = {};  // To store when the object was last announced (prevents s
 let lastBeepTime = 0;  // To track the last time a beep was played
 let cameraAccessGranted = false;  // Track if camera access has been granted
 
+const interestingObjects = [
+    'person',       // persone
+    'bicycle',      // biciclette
+    'car',          // macchine
+    'motorcycle',   // moto
+    'bus',          // autobus
+    'chair',        // sedie
+    'dining table', // tavoli
+    'potted plant', // piante
+    'vase',         // vasi
+    'dog',          // animali
+    'cat',          // animali
+    'truck',        // camion
+  ];
+
 // Function to check if webcam access is supported.
 function getUserMediaSupported() {
     return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
@@ -25,7 +40,7 @@ function enableCam() {
         audio: false,
         video: {
             facingMode: "environment",  // Ensure we use the rear camera
-            
+
             height: { min: 640, ideal: 720, max: 1920 },
             width: { min: 480, ideal: 1280, max: 1080 },
 
@@ -66,6 +81,31 @@ function clearBoundingBoxes() {
     children.splice(0); // Clear the array
 }
 
+function drawBoundingBox(){
+    // Create a bounding box (div element)
+    const highlighter = document.createElement('div');
+    highlighter.classList.add('highlighter');
+    highlighter.style.left = `${prediction.bbox[0]}px`;  // No need to invert
+    highlighter.style.top = `${prediction.bbox[1]}px`;
+    highlighter.style.width = `${prediction.bbox[2]}px`;
+    highlighter.style.height = `${prediction.bbox[3]}px`;
+
+    // Create a label (p element) for the prediction
+    const p = document.createElement('p');
+    p.classList.add('prediction-label');
+    p.innerText = `${prediction.class} - ${(prediction.score * 100).toFixed(2)}% confidence`;
+    p.style.left = `${prediction.bbox[0]}px`;  // No need to invert
+    p.style.top = `${prediction.bbox[1] - 20}px`;
+
+    // Add the bounding box and label to the liveView
+    liveView.appendChild(highlighter);
+    liveView.appendChild(p);
+
+    // Store the elements so we can remove them later
+    children.push(highlighter);
+    children.push(p);
+}
+
 // Start object detection using the webcam feed.
 function predictWebcam() {
     if (!video.videoWidth || !video.videoHeight) {
@@ -82,29 +122,9 @@ function predictWebcam() {
 
         // Loop through predictions and draw bounding boxes for confident detections
         predictions.forEach(prediction => {
-            if (prediction.score > 0.50) {
-                // Create a bounding box (div element)
-                const highlighter = document.createElement('div');
-                highlighter.classList.add('highlighter');
-                highlighter.style.left = `${prediction.bbox[0]}px`;  // No need to invert
-                highlighter.style.top = `${prediction.bbox[1]}px`;
-                highlighter.style.width = `${prediction.bbox[2]}px`;
-                highlighter.style.height = `${prediction.bbox[3]}px`;
+            if (prediction.score > 0.60) {
 
-                // Create a label (p element) for the prediction
-                const p = document.createElement('p');
-                p.classList.add('prediction-label');
-                p.innerText = `${prediction.class} - ${(prediction.score * 100).toFixed(2)}% confidence`;
-                p.style.left = `${prediction.bbox[0]}px`;  // No need to invert
-                p.style.top = `${prediction.bbox[1] - 20}px`;
-
-                // Add the bounding box and label to the liveView
-                liveView.appendChild(highlighter);
-                liveView.appendChild(p);
-
-                // Store the elements so we can remove them later
-                children.push(highlighter);
-                children.push(p);
+                drawBoundingBox();
 
                 // Determine object's position and announce it
                 const objectCenterX = prediction.bbox[0] + prediction.bbox[2] / 2;
@@ -150,16 +170,24 @@ function predictWebcam() {
 function announcePosition(object, position) {
     let message = '';
 
-    // Define message in English
-    if (position === 'center') {
-        message = `There is a ${object} in the center.`;
-    } else {
-        message = `There is a ${object} on your ${position}.`;
-    }
+    detections.forEach(detection => {
+        const detectedClass = detection.class;
+        
+        drawBoundingBox();
 
-    const speech = new SpeechSynthesisUtterance(message);
-    speech.lang = 'en-US';  // Set language to English (US)
-    window.speechSynthesis.speak(speech);
+        if(interestingObjects.includes(detectedClass)){
+            // Define message in English
+            if (position === 'center') {
+                message = `There is a ${object} in the center.`;
+            } else {
+                message = `There is a ${object} on your ${position}.`;
+            }
+        
+            const speech = new SpeechSynthesisUtterance(message);
+            speech.lang = 'en-US';  // Set language to English (US)
+            window.speechSynthesis.speak(speech);
+        }
+    });
 }
 
 // Estimate distance based on bounding box width
