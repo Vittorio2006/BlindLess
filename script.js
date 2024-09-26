@@ -81,30 +81,30 @@ function clearBoundingBoxes() {
     children.splice(0); // Clear the array
 }
 
-function drawBoundingBox(prediction) {
-    // Create a bounding box (div element)
-    const highlighter = document.createElement('div');
-    highlighter.classList.add('highlighter');
-    highlighter.style.left = `${prediction.bbox[0]}px`;  // No need to invert
-    highlighter.style.top = `${prediction.bbox[1]}px`;
-    highlighter.style.width = `${prediction.bbox[2]}px`;
-    highlighter.style.height = `${prediction.bbox[3]}px`;
+// function drawBoundingBox(prediction) {
+//     // Create a bounding box (div element)
+//     const highlighter = document.createElement('div');
+//     highlighter.classList.add('highlighter');
+//     highlighter.style.left = `${prediction.bbox[0]}px`;  // No need to invert
+//     highlighter.style.top = `${prediction.bbox[1]}px`;
+//     highlighter.style.width = `${prediction.bbox[2]}px`;
+//     highlighter.style.height = `${prediction.bbox[3]}px`;
 
-    // Create a label (p element) for the prediction
-    const p = document.createElement('p');
-    p.classList.add('prediction-label');
-    p.innerText = `${prediction.class} - ${(prediction.score * 100).toFixed(2)}% confidence`;
-    p.style.left = `${prediction.bbox[0]}px`;  // No need to invert
-    p.style.top = `${prediction.bbox[1] - 20}px`;
+//     // Create a label (p element) for the prediction
+//     const p = document.createElement('p');
+//     p.classList.add('prediction-label');
+//     p.innerText = `${prediction.class} - ${(prediction.score * 100).toFixed(2)}% confidence`;
+//     p.style.left = `${prediction.bbox[0]}px`;  // No need to invert
+//     p.style.top = `${prediction.bbox[1] - 20}px`;
 
-    // Add the bounding box and label to the liveView
-    liveView.appendChild(highlighter);
-    liveView.appendChild(p);
+//     // Add the bounding box and label to the liveView
+//     liveView.appendChild(highlighter);
+//     liveView.appendChild(p);
 
-    // Store the elements so we can remove them later
-    children.push(highlighter);
-    children.push(p);
-}
+//     // Store the elements so we can remove them later
+//     children.push(highlighter);
+//     children.push(p);
+// }
 
 // Start object detection using the webcam feed.
 function predictWebcam() {
@@ -124,7 +124,28 @@ function predictWebcam() {
         predictions.forEach(prediction => {
             if (prediction.score > 0.60) {
                 // Draw bounding box for the current prediction
-                drawBoundingBox(prediction);
+                // Create a bounding box (div element)
+                const highlighter = document.createElement('div');
+                highlighter.classList.add('highlighter');
+                highlighter.style.left = `${prediction.bbox[0]}px`;  // No need to invert
+                highlighter.style.top = `${prediction.bbox[1]}px`;
+                highlighter.style.width = `${prediction.bbox[2]}px`;
+                highlighter.style.height = `${prediction.bbox[3]}px`;
+
+                // Create a label (p element) for the prediction
+                const p = document.createElement('p');
+                p.classList.add('prediction-label');
+                p.innerText = `${prediction.class} - ${(prediction.score * 100).toFixed(2)}% confidence`;
+                p.style.left = `${prediction.bbox[0]}px`;  // No need to invert
+                p.style.top = `${prediction.bbox[1] - 20}px`;
+
+                // Add the bounding box and label to the liveView
+                liveView.appendChild(highlighter);
+                liveView.appendChild(p);
+
+                // Store the elements so we can remove them later
+                children.push(highlighter);
+                children.push(p);
 
                 // Determine object's position and announce it
                 const objectCenterX = prediction.bbox[0] + prediction.bbox[2] / 2;
