@@ -8,21 +8,6 @@ let lastSpoken = {};  // To store when the object was last announced (prevents s
 let lastBeepTime = 0;  // To track the last time a beep was played
 let cameraAccessGranted = false;  // Track if camera access has been granted
 
-const interestingObjects = [
-    'person',       // persone
-    'bicycle',      // biciclette
-    'car',          // macchine
-    'motorcycle',   // moto
-    'bus',          // autobus
-    'chair',        // sedie
-    'dining table', // tavoli
-    'potted plant', // piante
-    'vase',         // vasi
-    'dog',          // animali
-    'cat',          // animali
-    'truck',        // camion
-  ];
-
 // Function to check if webcam access is supported.
 function getUserMediaSupported() {
     return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
@@ -74,31 +59,6 @@ function clearBoundingBoxes() {
     children.splice(0); // Clear the array
 }
 
-// function drawBoundingBox(prediction) {
-//     // Create a bounding box (div element)
-//     const highlighter = document.createElement('div');
-//     highlighter.classList.add('highlighter');
-//     highlighter.style.left = `${prediction.bbox[0]}px`;  // No need to invert
-//     highlighter.style.top = `${prediction.bbox[1]}px`;
-//     highlighter.style.width = `${prediction.bbox[2]}px`;
-//     highlighter.style.height = `${prediction.bbox[3]}px`;
-
-//     // Create a label (p element) for the prediction
-//     const p = document.createElement('p');
-//     p.classList.add('prediction-label');
-//     p.innerText = `${prediction.class} - ${(prediction.score * 100).toFixed(2)}% confidence`;
-//     p.style.left = `${prediction.bbox[0]}px`;  // No need to invert
-//     p.style.top = `${prediction.bbox[1] - 20}px`;
-
-//     // Add the bounding box and label to the liveView
-//     liveView.appendChild(highlighter);
-//     liveView.appendChild(p);
-
-//     // Store the elements so we can remove them later
-//     children.push(highlighter);
-//     children.push(p);
-// }
-
 // Start object detection using the webcam feed.
 function predictWebcam() {
     if (!video.videoWidth || !video.videoHeight) {
@@ -115,8 +75,7 @@ function predictWebcam() {
 
         // Loop through predictions and draw bounding boxes for confident detections
         predictions.forEach(prediction => {
-            if (prediction.score > 0.60) {
-                // Draw bounding box for the current prediction
+            if (prediction.score > 0.50) {
                 // Create a bounding box (div element)
                 const highlighter = document.createElement('div');
                 highlighter.classList.add('highlighter');
@@ -180,29 +139,20 @@ function predictWebcam() {
     });
 }
 
-
 // Function to announce the object's position using speech synthesis
 function announcePosition(object, position) {
     let message = '';
 
-    // detections.forEach(detection => {
-    //     const detectedClass = detection.class;
-        
-
-
-    if(interestingObjects.includes(detectedClass)){
-        // Define message in English
-        if (position === 'center') {
-            message = `There is a ${object} in the center.`;
-        } else {
-            message = `There is a ${object} on your ${position}.`;
-        }
-    
-        const speech = new SpeechSynthesisUtterance(message);
-        speech.lang = 'en-US';  // Set language to English (US)
-        window.speechSynthesis.speak(speech);
+    // Define message in English
+    if (position === 'center') {
+        message = `There is a ${object} in the center.`;
+    } else {
+        message = `There is a ${object} on your ${position}.`;
     }
-    // });
+
+    const speech = new SpeechSynthesisUtterance(message);
+    speech.lang = 'en-US';  // Set language to English (US)
+    window.speechSynthesis.speak(speech);
 }
 
 // Estimate distance based on bounding box width
