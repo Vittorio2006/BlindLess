@@ -75,7 +75,7 @@ function predictWebcam() {
 
         // Loop through predictions and draw bounding boxes for confident detections
         predictions.forEach(prediction => {
-            if (prediction.score > 0.50) {
+            if (prediction.score > 0.60) {
                 // Create a bounding box (div element)
                 const highlighter = document.createElement('div');
                 highlighter.classList.add('highlighter');
