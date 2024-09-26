@@ -21,11 +21,13 @@ cocoSsd.load().then(function(loadedModel) {
 
 // Enable the webcam stream.
 function enableCam() {
-    const constraints = { video: 
-        true,
-        facingMode: "environment",
-        height: { ideal: 720 },
-        width: { ideal: 1280 }
+    const constraints = { 
+        audio: false,
+        video: {
+            facingMode: "environment",
+            height: { ideal: 720 },
+            width: { ideal: 1280 }
+        }
      };
 
     navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
