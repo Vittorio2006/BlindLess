@@ -185,24 +185,24 @@ function predictWebcam() {
 function announcePosition(object, position) {
     let message = '';
 
-    detections.forEach(detection => {
-        const detectedClass = detection.class;
+    // detections.forEach(detection => {
+    //     const detectedClass = detection.class;
         
 
 
-        if(interestingObjects.includes(detectedClass)){
-            // Define message in English
-            if (position === 'center') {
-                message = `There is a ${object} in the center.`;
-            } else {
-                message = `There is a ${object} on your ${position}.`;
-            }
-        
-            const speech = new SpeechSynthesisUtterance(message);
-            speech.lang = 'en-US';  // Set language to English (US)
-            window.speechSynthesis.speak(speech);
+    if(interestingObjects.includes(detectedClass)){
+        // Define message in English
+        if (position === 'center') {
+            message = `There is a ${object} in the center.`;
+        } else {
+            message = `There is a ${object} on your ${position}.`;
         }
-    });
+    
+        const speech = new SpeechSynthesisUtterance(message);
+        speech.lang = 'en-US';  // Set language to English (US)
+        window.speechSynthesis.speak(speech);
+    }
+    // });
 }
 
 // Estimate distance based on bounding box width
