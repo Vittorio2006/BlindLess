@@ -81,7 +81,7 @@ function clearBoundingBoxes() {
     children.splice(0); // Clear the array
 }
 
-function drawBoundingBox(){
+function drawBoundingBox(prediction) {
     // Create a bounding box (div element)
     const highlighter = document.createElement('div');
     highlighter.classList.add('highlighter');
@@ -120,13 +120,11 @@ function predictWebcam() {
         // Clear any previous highlighters or labels.
         clearBoundingBoxes();
 
-        drawBoundingBox();
-
         // Loop through predictions and draw bounding boxes for confident detections
         predictions.forEach(prediction => {
             if (prediction.score > 0.60) {
-
-                drawBoundingBox();
+                // Draw bounding box for the current prediction
+                drawBoundingBox(prediction);
 
                 // Determine object's position and announce it
                 const objectCenterX = prediction.bbox[0] + prediction.bbox[2] / 2;
@@ -167,6 +165,7 @@ function predictWebcam() {
         console.error("Error during object detection: ", err);
     });
 }
+
 
 // Function to announce the object's position using speech synthesis
 function announcePosition(object, position) {
