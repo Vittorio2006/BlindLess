@@ -24,7 +24,7 @@ function enableCam() {
     const constraints = { 
         audio: false,
         video: {
-            facingMode: "environment",
+            facingMode: "environment",  // Ensure we use the rear camera
             height: { ideal: 720 },
             width: { ideal: 1280 }
         }
@@ -75,11 +75,11 @@ function predictWebcam() {
 
         // Loop through predictions and draw bounding boxes for confident detections
         predictions.forEach(prediction => {
-            if (prediction.score > 0.60) {
+            if (prediction.score > 0.50) {
                 // Create a bounding box (div element)
                 const highlighter = document.createElement('div');
                 highlighter.classList.add('highlighter');
-                highlighter.style.left = `${video.videoWidth - prediction.bbox[0] - prediction.bbox[2]}px`; // Adjusted for mirrored effect
+                highlighter.style.left = `${prediction.bbox[0]}px`;  // No need to invert
                 highlighter.style.top = `${prediction.bbox[1]}px`;
                 highlighter.style.width = `${prediction.bbox[2]}px`;
                 highlighter.style.height = `${prediction.bbox[3]}px`;
@@ -88,7 +88,7 @@ function predictWebcam() {
                 const p = document.createElement('p');
                 p.classList.add('prediction-label');
                 p.innerText = `${prediction.class} - ${(prediction.score * 100).toFixed(2)}% confidence`;
-                p.style.left = `${video.videoWidth - prediction.bbox[0] - prediction.bbox[2]}px`; // Adjusted for mirrored effect
+                p.style.left = `${prediction.bbox[0]}px`;  // No need to invert
                 p.style.top = `${prediction.bbox[1] - 20}px`;
 
                 // Add the bounding box and label to the liveView
@@ -100,7 +100,7 @@ function predictWebcam() {
                 children.push(p);
 
                 // Determine object's position and announce it
-                const objectCenterX = video.videoWidth - (prediction.bbox[0] + prediction.bbox[2] / 2);
+                const objectCenterX = prediction.bbox[0] + prediction.bbox[2] / 2;
                 let position = '';
 
                 if (objectCenterX < video.videoWidth / 3) {
