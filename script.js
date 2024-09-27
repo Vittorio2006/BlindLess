@@ -8,6 +8,9 @@ let lastSpoken = {};  // To store when the object was last announced (prevents s
 let lastBeepTime = 0;  // To track the last time a beep was played
 let cameraAccessGranted = false;  // Track if camera access has been granted
 
+// List of objects to announce
+const validObjects = ['car', 'bicycle', 'truck', 'bus', 'person', 'cat', 'dog', 'chair', 'dining table', 'motorcycle', 'potted plant', 'vase'];
+
 // Function to check if webcam access is supported.
 function getUserMediaSupported() {
     return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
@@ -75,7 +78,7 @@ function predictWebcam() {
 
         // Loop through predictions and draw bounding boxes for confident detections
         predictions.forEach(prediction => {
-            if (prediction.score > 0.50) {
+            if (prediction.score > 0.6 && validObjects.includes(prediction.class)) {
                 // Create a bounding box (div element)
                 const highlighter = document.createElement('div');
                 highlighter.classList.add('highlighter');
