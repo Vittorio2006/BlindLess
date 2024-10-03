@@ -375,3 +375,22 @@ nav ul li a:hover {
       font-size: 0.9rem; /* Riduci il paragrafo su mobile */
   }
 }
+
+.section-title{
+  border-bottom: 2px solid #959494;
+  padding: 12px;
+  margin-bottom: 24px;
+  position: sticky;
+  top: 0;
+  background-color: white;
+  box-shadow: 0px 7px 12px -9px #4f4f4f78;
+}
+
+.busines-plan-section p{
+  padding-left: 10px;
+  padding-bottom: 5px;
+}
+
+.busines-plan-section ul{
+  padding-inline-start: 27.5px;
+}
