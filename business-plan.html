@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css"> <!-- Link al file CSS -->
+    <title>Business Plan</title>
+    <style>
+        body {
+            font-family: 'Helvetica', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        /* Header styling */
+        header {
+            background-color: #fff;
+            border-bottom: 1px solid #eaeaea;
+            padding: 20px 0;
+        }
+
+        /* Header wrapper for centering content */
+        .header-wrapper {
+            max-width: 1200px;
+            margin: 0 auto; /* Center the content */
+            padding: 0 20px; /* Optional padding for responsiveness */
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: #000;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .logo a {
+            text-decoration: none;
+            color: #000;
+        }
+
+        /* Navigation Menu */
+        nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-left: 10px;
+        }
+
+        nav ul li {
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #000;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Divider line between logo and menu items */
+        nav ul li::before {
+            content: "";
+            display: inline-block;
+            width: 1px;
+            height: 20px;
+            background-color: #eaeaea;
+            margin-right: 10px;
+        }
+
+        nav ul li:first-child::before {
+            display: none; /* Remove divider before the first item */
+        }
+
+        nav ul li a:hover {
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        /* Main Container Styling */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            line-height: 1.6;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 50px;
+            background-color: white;
+            position: -webkit-sticky; /* Safari */
+            position: sticky;
+            top: 0;
+            padding: 10px;
+            z-index: 100;
+            background-color: #f0f0f0;
+        }
+
+        p {
+            font-size: 16px;
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        /* Stile mobile */
+        @media (max-width: 768px) {
+            .header-content {
+                justify-content: center;
+                gap: 10px;
+            }
+
+            nav ul {
+                flex-direction: row; /* Mantieni le voci una accanto all'altra anche su mobile */
+            }
+
+            nav ul li::before {
+                height: 16px; /* Riduce l'altezza dei divisori su mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header con logo BlindLess e menu -->
+    <header>
+        <div class="header-wrapper">
+            <div class="header-content">
+                <!-- Logo BlindLess collegato all'index -->
+                <div class="logo">
+                    <h1><a href="index.html">BlindLess</a></h1> <!-- Collegato alla home page -->
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="index.html">Prodotto</a></li>
+                        <li><a href="business-plan.html">Business Plan</a></li>
+                        <li><a href="price.html">Price</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- MISSION Section -->
+        <div class="section">
+            <h2>MISSION</h2>
+            <p><strong>Chi siamo e cosa facciamo?</strong><br>
+            La nostra azienda sarà una software house specializzata nello sviluppo di soluzioni innovative per l'accessibilità. Il nostro prodotto principale è BlindLess, un'app di computer vision progettata per integrarsi con il bastone da orientamento e migliorare la mobilità e la sicurezza delle persone non vedenti o ipovedenti durante gli spostamenti quotidiani.</p>
+            
+            <p><strong>Dove operiamo?</strong><br>
+            Come software house, la nostra sede sarà focalizzata sullo sviluppo, progettazione e testing del prodotto. La location ospiterà sviluppatori e designer specializzati. Città come Milano rappresentano una scelta ideale per la nostra attività, grazie alla sua ampia offerta di talenti nel settore tecnologico e al suo ambiente dinamico.</p>
+            
+            <p><strong>A chi ci rivolgiamo?</strong><br>
+            Il nostro target sono persone con disabilità visive ovvero non vedenti e ipovedenti. L'obiettivo della nostra azienda è migliorare significativamente la qualità della loro vita, offrendo loro uno strumento accessibile che incrementi l'autonomia e la sicurezza negli spostamenti.</p>
+            
+            <p><strong>Perché scegliere noi?</strong><br>
+            I nostri potenziali clienti dovrebbero considerare BlindLess perché offriamo una soluzione unica, semplice ed economicamente accessibile, che non ha concorrenti diretti sul mercato. Il nostro focus è fornire un prodotto facile da utilizzare, che si integri perfettamente nella vita quotidiana delle persone con disabilità visive.</p>
+            
+            <p><strong>Cosa ci distingue dalla concorrenza?</strong><br>
+            BlindLess si distingue per la sua facilità d'uso e la sua accessibilità. È una soluzione basata su un'app per smartphone, che non richiede apparecchiature complesse e costose. La nostra attenzione è rivolta alla creazione di un'esperienza intuitiva, rendendo la tecnologia alla portata di tutti.</p>
+        </div>
+
+        <!-- FLUSSI DI RICAVI Section -->
+        <div class="section">
+            <h2>FLUSSI DI RICAVI, CANALI DI VENDITA E DI MARKETING</h2>
+            <p><strong>Flussi di Ricavi</strong><br>
+            Il nostro modello di business prevede un sistema basato su abbonamenti, offrendo ai clienti la possibilità di scegliere tra diversi piani in base alle loro esigenze:</p>
+            
+            <ul>
+                <li>Piano mensile: € 5,49</li>
+                <li>Piano trimestrale: € 14,99</li>
+                <li>Piano annuale: € 49,99</li>
+            </ul>
+            
+            <p>Questa struttura di abbonamento ci consentirà di generare ricavi ricorrenti, garantendo stabilità finanziaria e incentivando la fidelizzazione degli utenti.</p>
+
+            <p><strong>Canali di Distribuzione</strong><br>
+            Attualmente, il prototipo dell’app è disponibile gratuitamente sul web. Tuttavia, una volta completata la versione ufficiale, l’app sarà distribuita attraverso i principali store digitali, come l'App Store (iOS) e il Google Play Store (Android). Questo assicurerà agli utenti un’esperienza sicura, con pagamenti protetti e garantiti dalle piattaforme ufficiali, aumentando la fiducia verso il nostro prodotto.</p>
+            
+            <p><strong>Strategie di Marketing</strong><br>
+            Per promuovere BlindLess e raggiungere i nostri potenziali utenti, ci concentreremo su campagne di pubblicità mirata sui social media, sfruttando le piattaforme più utilizzate dai nostri target. Inoltre, parteciperemo a eventi legati alla tecnologia e all'inclusione, per aumentare la visibilità del prodotto e creare opportunità di networking con professionisti del settore.</p>
+        </div>
+
+        <!-- ORGANIZZAZIONE Section -->
+        <div class="section">
+            <h2>ORGANIZZAZIONE E GESTIONE DELLE ATTIVITÀ</h2>
+            <p>La nostra azienda adotterà una struttura organizzativa piatta, particolarmente indicata per piccole imprese e start-up nella fase iniziale di sviluppo. Questa struttura consente di operare con un numero ridotto di livelli gerarchici, eliminando il middle management e favorendo un maggiore coinvolgimento di tutti i dipendenti nel processo decisionale.</p>
+
+            <p><strong>Come funziona?</strong><br>
+            Nella struttura piatta, esistono comunque figure di riferimento a cui i dipendenti possono rivolgersi, ma la differenza sostanziale rispetto alle strutture tradizionali è che il potere decisionale viene condiviso. Questo permette a tutti i membri del team di partecipare attivamente alle decisioni aziendali, rispondendo in modo rapido ed efficiente alle esigenze del mercato o dei clienti.</p>
+            
+            <p><strong>Vantaggi principali:</strong></p>
+            <ul>
+                <li>Comunicazione e coordinamento migliorati: Senza strati intermedi di management, la comunicazione interna è più diretta, favorendo il flusso di informazioni e una collaborazione efficace.</li>
+                <li>Maggiore responsabilità e soddisfazione dei dipendenti: Coinvolgendo il team nelle decisioni, i dipendenti sentono di avere un impatto reale sull'azienda e questo contribuisce a un ambiente di lavoro più motivante.</li>
+            </ul>
+
+            <p><strong>Sfide della struttura piatta:</strong><br>
+            Competenze generalizzate: In una struttura piatta, i dipendenti tendono a sviluppare competenze più ampie e meno specializzate. Ciò può richiedere una formazione continua per garantire la crescita professionale del team.</p>
+
+            <p>Autonomia e motivazione: Questa struttura richiede dipendenti fortemente motivati, poiché non ci sono figure che supervisionano ogni singolo passo o danno ordini quotidiani.</p>
+
+            <p>Mentre molte start-up possono scegliere di adottare strutture più tradizionali man mano che crescono, riteniamo che la struttura piatta sia la soluzione ideale per la fase iniziale di BlindLess. Ci permetterà di sfruttare la flessibilità e l’agilità necessarie per sviluppare il prodotto e rispondere rapidamente ai cambiamenti del mercato, mantenendo un alto livello di coinvolgimento da parte di tutto il team.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,26 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
-    <title>Multiple Object Detection</title>
+    <title>BlindLess - Home</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="style.css"> <!-- Link al file CSS -->
+    <link rel="stylesheet" href="style.css"> <!-- Link al file CSS aggiornato -->
 </head>
 <body>
-    <h1>Multiple Object Detection</h1>
-    <p>Click the button below to enable the webcam and start object detection.</p>
+    <!-- Header con logo BlindLess e menu -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <!-- Logo BlindLess -->
+                <div class="logo">
+                    <h1>BlindLess</h1>
+                </div>
 
-    <div id="liveView" class="camView">
-        <button id="toggleButton">Run</button>
-        <video id="webcam" autoplay muted playsinline></video>
-    </div>
+                <!-- Navigation Menu -->
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="index.html">Prodotto</a></li>
+                        <li><a href="business-plan.html">Business Plan</a></li>
+                        <li><a href="price.html">Price</a></li> <!-- Collegamento aggiornato -->
+                    </ul>
+                </nav>
 
-    <!-- Import TensorFlow.js and COCO-SSD -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+            </div>
+        </div>
+    </header>
 
-    <!-- Import your JavaScript file -->
-    <script src="script.js" defer></script>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <p class="hero-description">Soluzioni innovative per migliorare l'accessibilità visiva e garantire indipendenza e produttività a tutti.</p>
+
+            <p class="support-description">Rileva e descrivi gli oggetti intorno a te in tempo reale, aiutando nella navigazione e nelle attività quotidiane.</p>
+
+            <!-- Start Demo Button (collegamento alla pagina con la webcam) -->
+            <a href="demo.html" id="startDemoButton" class="start-button">Start Demo</a>
+        </div>
+    </section>
+
+    <!-- Sezione Prodotto, collegata al menu -->
+    <section id="prodotto">
+        <div class="container">
+            <h2>Prodotto</h2>
+        </div>
+    </section>
+
+    <!-- Card Menu Section -->
+    <section class="card-menu">
+        <div class="container">
+            <div class="card-menu-content">
+                <button class="arrow left-arrow" id="prevCard">◀</button>
+                <div class="cards">
+                    <div class="card visible">
+                        <h2>Cos’è?</h2>
+                        <p>BlindLess è una web app progettata per assistere le persone non vedenti o ipovedenti, rilevando ostacoli in tempo reale integrandosi con l'uso del bastone da orientamento.</p>
+                    </div>
+                    <div class="card">
+                        <h2>A chi è rivolto?</h2>
+                        <p>BlindLess è rivolta per persone non vedenti o ipovedenti, offrendo loro uno strumento che facilita la mobilità in ambienti esterni, migliorando la sicurezza e l'indipendenza.</p>
+                    </div>
+                    <div class="card">
+                        <h2>Come funziona?</h2>
+                        <p>BlindLess accede alla fotocamera del dispositivo e, grazie a un sistema di rilevamento degli oggetti, individua e segnala ostacoli come auto, persone e animali in tempo reale, aiutando l'utente a evitarli.</p>
+                    </div>
+                    <div class="card">
+                        <h2>Gli aggiornamenti?</h2>
+                        <p>Nei prossimi anni puntiamo di aggiornare l’app al fine di migliorare l’esperienza utente, integrando funzioni come la rilevazione della profondità, l’audio direzionale e la rilevazione della posizione nell’ambiente sfruttando tutti i sensori presenti negli smartphone.</p>
+                    </div>
+                </div>
+                <button class="arrow right-arrow" id="nextCard">▶</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Import JavaScript file -->
+    <script src="website_script.js" defer></script>
 </body>
 </html>

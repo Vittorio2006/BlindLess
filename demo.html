@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>BlindLess - Demo</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css"> <!-- Link al file CSS -->
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <!-- Logo BlindLess collegato all'index -->
+                <div class="logo">
+                    <h1><a href="index.html">BlindLess</a></h1> <!-- Collegato alla home page -->
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="index.html">Prodotto</a></li>
+                        <li><a href="business-plan.html">Business Plan</a></li>
+                        <li><a href="price.html">Price</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Demo Section (con webcam e rilevamento oggetti) -->
+    <section class="live-view-section">
+        <div class="container">
+            <h2>Object Detection Demo</h2>
+            <p>Attiva la videocamera per iniziare a rilevare gli oggetti.</p>
+
+            <div id="liveView" class="camView">
+                <button id="toggleButton">Run</button>
+                <video id="webcam" autoplay playsinline></video>
+            </div>
+        </div>
+    </section>
+
+    <!-- Import TensorFlow.js and COCO-SSD -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
+    <!-- Import your JavaScript file -->
+    <script src="demo_script.js" defer></script>
+</body>
+</html>
