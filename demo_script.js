@@ -3,7 +3,7 @@ const toggleButton = document.getElementById('toggleButton');
 const liveView = document.getElementById('liveView');
 const paragraphs = document.getElementsByClassName("demo-p");
 
-const header = document.getElementsByTagName("header");
+const header = document.getElementById("demo-header");
 
 let model = undefined;
 let isRunning = false;
