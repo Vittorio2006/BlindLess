@@ -3,6 +3,8 @@ const toggleButton = document.getElementById('toggleButton');
 const liveView = document.getElementById('liveView');
 const paragraphs = document.getElementsByClassName("demo-p");
 
+const header = document.getElementsByTagName("header");
+
 let model = undefined;
 let isRunning = false;
 let children = [];  // To store dynamically created bounding boxes and labels
@@ -24,6 +26,8 @@ const videoConstraints = {
  
 function SetVideoVisible() {
     video.style.display = "block";
+    header.style.display = "none";
+
     for (let i = 0; i < paragraphs.length; i++) {
         const p = paragraphs[i];
         p.style.display = "none";
@@ -33,6 +37,8 @@ function SetVideoVisible() {
 
 function SetVideoInvisible() {
     video.style.display = "none";
+    header.style.display = "block";
+
     for (let i = 0; i < paragraphs.length; i++) {
         const p = paragraphs[i];
         p.style.display = "block";
