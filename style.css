@@ -385,6 +385,7 @@ nav ul li a:hover {
   min-width: 115px;
   margin-top: 12px;
   box-shadow: 5px 5px 20px -6px rgb(61 61 61 / 75%);
+  border: none;
 }
 
 

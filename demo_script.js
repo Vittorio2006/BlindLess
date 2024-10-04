@@ -1,10 +1,7 @@
 const video = document.getElementById('webcam');
 const toggleButton = document.getElementById('toggleButton');
 const liveView = document.getElementById('liveView');
-
 const paragraphs = document.getElementsByClassName("demo-p");
-
-
 
 let model = undefined;
 let isRunning = false;
@@ -23,55 +20,59 @@ const videoConstraints = {
         height: { ideal: 720 },
         width: { ideal: 1280 }
     }
- };
- 
- function SetVideoVisible() {
-     console.log("SetVideoVisible");
-     video.style.display = "block"
-     for (let i = 0; i < paragraphs.length; i++) {
-         const p = paragraphs[i];
-         p.style.display = "none";
-        }
 };
+ 
+function SetVideoVisible() {
+    video.style.display = "block";
+    for (let i = 0; i < paragraphs.length; i++) {
+        const p = paragraphs[i];
+        p.style.display = "none";
+    }
+    document.body.style.overflow = "hidden";
+}
 
- function SetVideoInvisible() {
+function SetVideoInvisible() {
     video.style.display = "none";
     for (let i = 0; i < paragraphs.length; i++) {
         const p = paragraphs[i];
         p.style.display = "block";
     }
- };
+    document.body.style.overflow = "auto";
+}
 
- SetVideoInvisible();
- 
-    // Function to check if webcam access is supported.
-// function getUserMediaSupported() {
-//     console.log('check');
-//     return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-// }
+SetVideoInvisible();
 
-// Load the COCO-SSD model.
+// Load the COCO-SSD model
 cocoSsd.load().then(function(loadedModel) {
     model = loadedModel;
     console.log("Model loaded.");
 });
 
-// Enable the webcam stream.
-function enableCam() {
-    console.log("Enabled Cam");
-    
+// Enable the webcam and start object detection
+function enableCamAndDetect() {
+    console.log("Enabling webcam and starting detection...");
+
     SetVideoVisible();
     navigator.mediaDevices.getUserMedia(videoConstraints).then(function(stream) {
         video.srcObject = stream;
-        cameraAccessGranted = true;  // Set flag to true when camera access is granted
-        console.log("Webcam enabled.");
+        cameraAccessGranted = true;
+
+        // Start object detection once the webcam is ready
+        video.onloadeddata = () => {
+            isRunning = true;
+            predictWebcam();  // Start the object detection loop
+        };
+
+        console.log("Webcam enabled and object detection started.");
     }).catch(function(err) {
         console.error("Error accessing webcam: ", err);
     });
 }
 
-// Stop webcam stream and clear the bounding boxes.
-function stopCam() {
+// Stop webcam and stop object detection
+function stopCamAndDetect() {
+    console.log("Stopping webcam and object detection...");
+    
     SetVideoInvisible();
     const stream = video.srcObject;
     if (stream) {
@@ -79,22 +80,25 @@ function stopCam() {
         tracks.forEach(track => track.stop());
         video.srcObject = null;
     }
+
     // Clear bounding boxes and labels
     clearBoundingBoxes();
+    isRunning = false;  // Stop the prediction loop
+    console.log("Webcam and object detection stopped.");
 }
 
-// Clear all bounding boxes and labels from the live view.
+// Clear all bounding boxes and labels
 function clearBoundingBoxes() {
     for (let i = 0; i < children.length; i++) {
         liveView.removeChild(children[i]);
     }
-    children.splice(0); // Clear the array
+    children.splice(0);  // Clear the array
 }
 
-// Start object detection using the webcam feed.
+// Start object detection using the webcam feed
 function predictWebcam() {
     if (!video.videoWidth || !video.videoHeight) {
-        // Video not ready yet, so we skip this frame and request the next one.
+        // Video not ready yet, so skip this frame and request the next one
         if (isRunning) {
             window.requestAnimationFrame(predictWebcam);
         }
@@ -102,67 +106,53 @@ function predictWebcam() {
     }
 
     model.detect(video).then(function(predictions) {
-        // Clear any previous highlighters or labels.
+        // Clear previous bounding boxes and labels
         clearBoundingBoxes();
 
-        // Loop through predictions and draw bounding boxes for confident detections
+        // Draw bounding boxes for confident detections
         predictions.forEach(prediction => {
             if (prediction.score >= 0.55 && validObjects.includes(prediction.class)) {
-                // Create a bounding box (div element)
+                // Create bounding box and label
                 const highlighter = document.createElement('div');
                 highlighter.classList.add('highlighter');
-                highlighter.style.left = `${prediction.bbox[0]}px`;  // No need to invert
+                highlighter.style.left = `${prediction.bbox[0]}px`;
                 highlighter.style.top = `${prediction.bbox[1]}px`;
                 highlighter.style.width = `${prediction.bbox[2]}px`;
                 highlighter.style.height = `${prediction.bbox[3]}px`;
 
-                // Create a label (p element) for the prediction
                 const p = document.createElement('p');
                 p.classList.add('prediction-label');
                 p.innerText = `${prediction.class} - ${(prediction.score * 100).toFixed(2)}% confidence`;
-                p.style.left = `${prediction.bbox[0]}px`;  // No need to invert
+                p.style.left = `${prediction.bbox[0]}px`;
                 p.style.top = `${prediction.bbox[1] - 20}px`;
 
-                // Add the bounding box and label to the liveView
+                // Add bounding box and label to liveView
                 liveView.appendChild(highlighter);
                 liveView.appendChild(p);
 
-                // Store the elements so we can remove them later
                 children.push(highlighter);
                 children.push(p);
 
-                // Determine object's position and announce it
+                // Announce object position and distance
                 const objectCenterX = prediction.bbox[0] + prediction.bbox[2] / 2;
-                let position = '';
+                const position = objectCenterX < video.videoWidth / 3 ? 'left' : 
+                                 (objectCenterX > (2 * video.videoWidth) / 3 ? 'right' : 'center');
 
-                if (objectCenterX < video.videoWidth / 3) {
-                    position = 'left';
-                } else if (objectCenterX > (2 * video.videoWidth) / 3) {
-                    position = 'right';
-                } else {
-                    position = 'center';
-                }
-
-                // Check if the object has been announced recently (avoid repetition)
                 const currentTime = Date.now();
                 if (!lastSpoken[prediction.class] || currentTime - lastSpoken[prediction.class] > 5000) {
                     announcePosition(prediction.class, position);
-                    lastSpoken[prediction.class] = currentTime; // Update last spoken time
+                    lastSpoken[prediction.class] = currentTime;
                 }
 
-                // Estimate the object's distance using bounding box width
-                const bboxWidth = prediction.bbox[2];  // Width of the bounding box
-                const distance = estimateDistance(bboxWidth, video.videoWidth);
-
-                // If object is close (<= 5 meters) and enough time has passed, play a beep
+                const distance = estimateDistance(prediction.bbox[2], video.videoWidth);
                 if (distance <= 5 && currentTime - lastBeepTime > 1000) {
                     playBeep();
-                    lastBeepTime = currentTime;  // Update the time the beep was last played
+                    lastBeepTime = currentTime;
                 }
             }
         });
 
-        // Continue predicting if the webcam is still running.
+        // Continue detecting if isRunning is true
         if (isRunning) {
             window.requestAnimationFrame(predictWebcam);
         }
@@ -171,55 +161,36 @@ function predictWebcam() {
     });
 }
 
-// Function to announce the object's position using speech synthesis
+// Announce object's position using speech synthesis
 function announcePosition(object, position) {
-    let message = '';
-
-    // Define message in English
-    if (position === 'center') {
-        message = `There is a ${object} in the center.`;
-    } else {
-        message = `There is a ${object} on your ${position}.`;
-    }
-
+    const message = position === 'center' ? 
+        `There is a ${object} in the center.` : 
+        `There is a ${object} on your ${position}.`;
+    
     const speech = new SpeechSynthesisUtterance(message);
-    speech.lang = 'en-US';  // Set language to English (US)
+    speech.lang = 'en-US';
     window.speechSynthesis.speak(speech);
 }
 
 // Estimate distance based on bounding box width
 function estimateDistance(bboxWidth, videoWidth) {
-    const normalizedWidth = bboxWidth / videoWidth;  // Ratio of bbox width to video width
-    const distance = 1 / normalizedWidth;  // Estimated distance in meters
-    return distance;  
+    const normalizedWidth = bboxWidth / videoWidth;
+    return 1 / normalizedWidth;  // Estimated distance in meters
 }
 
-// Function to play a "beep" sound when an object is close
+// Play a beep sound when an object is close
 function playBeep() {
-    const beep = new Audio('beep.mp3');  // Assuming you have a beep.mp3 file in the project
+    const beep = new Audio('beep.mp3');  // Assuming beep.mp3 exists in the project
     beep.play();
 }
 
-// Toggle between starting and stopping the object detection.
+// Toggle between starting and stopping the object detection
 toggleButton.addEventListener('click', function() {
-    if (!cameraAccessGranted) {
-        // Request camera access on the first button click if not already granted
-        enableCam();  // Enable camera and set access flag
-    } else if (isRunning) {
-        // Stop analysis if currently running
-        stopCam();
-        isRunning = false;
-        toggleButton.innerText = 'Start'; // Reset the button text to "Run"
-        console.log("Object detection stopped.");
+    if (isRunning) {
+        stopCamAndDetect();  // Stop both webcam and object detection
+        toggleButton.innerText = 'Run';
     } else {
-        // When the button is pressed again, check if camera access is already granted
-        if (!video.srcObject) {
-            enableCam();  // If the video source is null, request camera access again
-        }
-        isRunning = true;  // Set isRunning to true here to control the analysis
-        predictWebcam(); // Start the prediction loop
-        toggleButton.innerText = 'Stop'; // Change to 'Stop' since we are running now
-        console.log("Object detection running...");
+        enableCamAndDetect();  // Start both webcam and object detection
+        toggleButton.innerText = 'Stop';
     }
 });
-
