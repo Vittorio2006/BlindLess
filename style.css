@@ -394,7 +394,3 @@ nav ul li a:hover {
 .busines-plan-section ul{
   padding-inline-start: 27.5px;
 }
-
-#webcam{
-  transform: scaleX(-1);
-}
