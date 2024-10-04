@@ -106,16 +106,6 @@ nav ul li a:hover {
   align-items: center;
 }
 
-/* Hero Section in stile OpenAI */
-.hero {
-  background-color: #fff;
-  padding: 100px 0;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
 
 .hero-description,
 .support-description {
@@ -139,26 +129,10 @@ nav ul li a:hover {
 }
 
 
-.start-button {
-  display: inline-block;
-  padding: 12px 24px;
-  background-color: #000;
-  color: #fff;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
-}
-
-.start-button:hover {
-  background-color: #333;
-}
-
 /* Stile per la sezione Prodotto */
 #prodotto {
-  background-color: #f6f8fa;  /* Sfondo chiaro */
-  padding: 20px 20px;  /* Riduce il padding, soprattutto il padding-bottom */
+  background-color: #e4e9ed;  /* Sfondo chiaro */
+  padding: 20px 20px 0px 20px;
   text-align: center;
 }
 
@@ -181,27 +155,33 @@ nav ul li a:hover {
   padding: 10px 20px; /* Più snello */
   background-color: #000; /* Nero */
   color: #fff;
-  border-radius: 24px; /* Forma rotonda ai bordi */
+  border-radius: 20px; /* Forma rotonda ai bordi */
   text-decoration: none;
   font-size: 1rem; /* Dimensione testo ridotta */
-  font-weight: bold;
   transition: background-color 0.3s ease;
-}
-
-.start-button:hover {
-  background-color: #333; /* Colore hover più chiaro */
 }
 
 /* Sezione webcam e rilevamento oggetti */
 .live-view-section {
   padding: 40px 0;
+}
+
+.live-view-section h2{
   text-align: center;
+}
+.live-view-section p{
+  padding-right: 12px;
+  padding-left: 12px;
+  padding-bottom: 10px;
+  font-weight: 100;
 }
 
 #liveView {
-  position: relative;
-  display: inline-block;
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
 }
 
 #webcam {
@@ -242,7 +222,7 @@ nav ul li a:hover {
 /* Card Menu Section */
 .card-menu {
   padding: 40px 0;
-  background-color: #f6f8fa;
+  background-color: #e4e9ed;
   text-align: center;
 }
 
@@ -255,9 +235,8 @@ nav ul li a:hover {
 .cards {
   display: flex;
   overflow: hidden; /* Hide overflow to show one card at a time */
-  width: 80%; /* Width of the card display */
-  margin: 0 20px;
-  position: relative;
+  width: 40%; /* Width of the card display */
+
 }
 
 .card {
@@ -285,11 +264,13 @@ nav ul li a:hover {
 .card h2 {
   font-size: 1.5rem;
   margin-bottom: 10px;
+  text-align: center;
 }
 
 .card p {
   font-size: 1rem;
   color: #666;
+  text-align: justify;
 }
 
 /* Stile di base per le frecce */
@@ -353,12 +334,12 @@ nav ul li a:hover {
   .start-button {
       font-size: 0.9rem;
       padding: 8px 16px; /* Ridimensiona il pulsante su mobile */
+      border-radius: 16px;
   }
 
   /* Adattamenti per le card su mobile */
   .cards {
       width: 100%; /* Rendi le card più larghe su mobile (100% del contenitore) */
-      margin: 0 10px; /* Aggiungi margine laterale per spazio su mobile */
   }
 
   .card {
@@ -376,13 +357,13 @@ nav ul li a:hover {
 }
 
 .section-title{
-  border-bottom: 2px solid #959494;
+  border-radius: 6px;
   padding: 12px;
   margin-bottom: 24px;
   position: sticky;
   top: 0;
   background-color: white;
-  box-shadow: 0px 7px 12px -9px #4f4f4f78;
+  box-shadow: 0px 12px 12px -16px #4f4f4f78;
 }
 
 .busines-plan-section p{
@@ -393,3 +374,17 @@ nav ul li a:hover {
 .busines-plan-section ul{
   padding-inline-start: 27.5px;
 }
+
+#toggleButton{
+  font-size: 18px;
+  text-transform: uppercase;
+  background-color: #0b0a0a;
+  color: #f4f1f1;
+  padding: 12px;
+  border-radius: 20px;
+  min-width: 115px;
+  margin-top: 12px;
+  box-shadow: 5px 5px 20px -6px rgb(61 61 61 / 75%);
+}
+
+

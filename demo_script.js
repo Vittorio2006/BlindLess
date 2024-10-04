@@ -1,6 +1,11 @@
 const video = document.getElementById('webcam');
 const toggleButton = document.getElementById('toggleButton');
 const liveView = document.getElementById('liveView');
+
+const paragraphs = document.getElementsByClassName("demo-p");
+
+
+
 let model = undefined;
 let isRunning = false;
 let children = [];  // To store dynamically created bounding boxes and labels
@@ -11,10 +16,39 @@ let cameraAccessGranted = false;  // Track if camera access has been granted
 // List of objects to announce
 const validObjects = ['car', 'bicycle', 'truck', 'bus', 'person', 'cat', 'dog', 'chair', 'dining table', 'motorcycle', 'potted plant', 'vase'];
 
-// Function to check if webcam access is supported.
-function getUserMediaSupported() {
-    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-}
+const videoConstraints = { 
+    audio: false,
+    video: {
+        facingMode: "environment",  // Ensure we use the rear camera
+        height: { ideal: 720 },
+        width: { ideal: 1280 }
+    }
+ };
+ 
+ function SetVideoVisible() {
+     console.log("SetVideoVisible");
+     video.style.display = "block"
+     for (let i = 0; i < paragraphs.length; i++) {
+         const p = paragraphs[i];
+         p.style.display = "none";
+        }
+};
+
+ function SetVideoInvisible() {
+    video.style.display = "none";
+    for (let i = 0; i < paragraphs.length; i++) {
+        const p = paragraphs[i];
+        p.style.display = "block";
+    }
+ };
+
+ SetVideoInvisible();
+ 
+    // Function to check if webcam access is supported.
+// function getUserMediaSupported() {
+//     console.log('check');
+//     return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+// }
 
 // Load the COCO-SSD model.
 cocoSsd.load().then(function(loadedModel) {
@@ -24,16 +58,10 @@ cocoSsd.load().then(function(loadedModel) {
 
 // Enable the webcam stream.
 function enableCam() {
-    const constraints = { 
-        audio: false,
-        video: {
-            facingMode: "environment",  // Ensure we use the rear camera
-            height: { ideal: 720 },
-            width: { ideal: 1280 }
-        }
-     };
-
-    navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+    console.log("Enabled Cam");
+    
+    SetVideoVisible();
+    navigator.mediaDevices.getUserMedia(videoConstraints).then(function(stream) {
         video.srcObject = stream;
         cameraAccessGranted = true;  // Set flag to true when camera access is granted
         console.log("Webcam enabled.");
@@ -44,6 +72,7 @@ function enableCam() {
 
 // Stop webcam stream and clear the bounding boxes.
 function stopCam() {
+    SetVideoInvisible();
     const stream = video.srcObject;
     if (stream) {
         const tracks = stream.getTracks();
@@ -180,7 +209,7 @@ toggleButton.addEventListener('click', function() {
         // Stop analysis if currently running
         stopCam();
         isRunning = false;
-        toggleButton.innerText = 'Run'; // Reset the button text to "Run"
+        toggleButton.innerText = 'Start'; // Reset the button text to "Run"
         console.log("Object detection stopped.");
     } else {
         // When the button is pressed again, check if camera access is already granted
@@ -194,8 +223,3 @@ toggleButton.addEventListener('click', function() {
     }
 });
 
-// Call this function on page load to request camera access initially
-document.addEventListener('DOMContentLoaded', function() {
-    // Initially, request camera access
-    enableCam();  // Request camera access on load
-});
