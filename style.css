@@ -185,6 +185,8 @@ nav ul li a:hover {
 }
 
 #webcam {
+  /* max-height: 640px;
+  max-width: 480px; */
   border: 2px solid #333;
   border-radius: 4px;
 }
