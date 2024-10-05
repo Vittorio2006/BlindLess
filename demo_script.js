@@ -19,8 +19,8 @@ const videoConstraints = {
     audio: false,
     video: {
         facingMode: "environment",  // Ensure we use the rear camera
-        height: { ideal: 480 },
-        width: { ideal: 320 }
+        height: { ideal: 320 },
+        width: { ideal: 480 }
     }
 };
  
