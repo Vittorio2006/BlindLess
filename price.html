@@ -5,9 +5,30 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="style.css">
 </head>
+<style>
+.pricing-section {
+    padding: 40px 0;
+    background-color: #e4e9ed;
+    text-align: center;
+}
 
+.pricing-section .card {
+  display: inline-block; /* Mostra le carte e consenti l'allineamento orizzontale */
+  min-width: 30%; /* Imposta una larghezza adeguata per ogni carta */
+  margin: 0 10px; /* Aggiungi margine tra le carte */
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  padding: 20px;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  opacity: 1; /* Rendi le carte visibili */
+  position: relative; /* Mantieni le carte nel flusso del layout */
+}
+
+</style>
 <body>
     <header>
         <div class="container">
@@ -33,11 +54,6 @@
         <h2>PRICING</h2>
         <p>Scegli il piano che fa per te:</p>
 
-        <div class="card-container">
-            <div class="card">1</div>
-            <div class="card">2</div>
-            <div class="card">3</div>
-        </div>
         <div class="pricing-section">
             <div class="card">
                 <h3>Mensile</h3>
