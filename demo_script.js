@@ -2,85 +2,83 @@ const video = document.getElementById('webcam');
 const toggleButton = document.getElementById('toggleButton');
 const liveView = document.getElementById('liveView');
 const paragraphs = document.getElementsByClassName("demo-p");
+
 const header = document.getElementById("demo-header");
 
 let model = undefined;
 let isRunning = false;
-let children = [];
-let lastSpoken = {};
-let lastBeepTime = 0;
-let cameraAccessGranted = false;
-let synth = window.speechSynthesis;  // SpeechSynthesis API
-let voices = [];
+let children = [];  // To store dynamically created bounding boxes and labels
+let lastSpoken = {};  // To store when the object was last announced (prevents spamming)
+let lastBeepTime = 0;  // To track the last time a beep was played
+let cameraAccessGranted = false;  // Track if camera access has been granted
 
-// Carica le voci per garantire la compatibilità con iOS
-function loadVoices() {
-    voices = synth.getVoices();
-    if (!voices.length) {
-        // Su iOS, potrebbe essere necessario attendere che le voci siano caricate
-        synth.onvoiceschanged = () => {
-            voices = synth.getVoices();
-        };
-    }
-}
-
-window.addEventListener('load', loadVoices);
-
-// Lista degli oggetti validi
+// List of objects to announce
 const validObjects = ['car', 'bicycle', 'truck', 'bus', 'person', 'cat', 'dog', 'chair', 'dining table', 'motorcycle', 'potted plant', 'vase'];
 
-const videoConstraints = {
+const videoConstraints = { 
     audio: false,
     video: {
-        facingMode: "environment",
+        facingMode: "environment",  // Ensure we use the rear camera
         height: { ideal: 320 },
         width: { ideal: 480 }
     }
 };
-
+ 
 function SetVideoVisible() {
     video.style.display = "block";
     header.style.display = "none";
+
     for (let i = 0; i < paragraphs.length; i++) {
-        paragraphs[i].style.display = "none";
+        const p = paragraphs[i];
+        p.style.display = "none";
     }
+    // document.body.style.overflow = "hidden";
 }
 
 function SetVideoInvisible() {
     video.style.display = "none";
     header.style.display = "block";
+
     for (let i = 0; i < paragraphs.length; i++) {
-        paragraphs[i].style.display = "block";
+        const p = paragraphs[i];
+        p.style.display = "block";
     }
+    // document.body.style.overflow = "auto";
 }
 
 SetVideoInvisible();
 
-// Carica il modello COCO-SSD
+// Load the COCO-SSD model
 cocoSsd.load().then(function(loadedModel) {
     model = loadedModel;
     console.log("Model loaded.");
 });
 
-// Attiva la webcam e avvia il rilevamento degli oggetti
+// Enable the webcam and start object detection
 function enableCamAndDetect() {
     console.log("Enabling webcam and starting detection...");
+
     SetVideoVisible();
     navigator.mediaDevices.getUserMedia(videoConstraints).then(function(stream) {
         video.srcObject = stream;
         cameraAccessGranted = true;
+
+        // Start object detection once the webcam is ready
         video.onloadeddata = () => {
             isRunning = true;
-            predictWebcam();
+            predictWebcam();  // Start the object detection loop
         };
+
+        console.log("Webcam enabled and object detection started.");
     }).catch(function(err) {
         console.error("Error accessing webcam: ", err);
     });
 }
 
-// Disattiva la webcam e interrompe il rilevamento degli oggetti
+// Stop webcam and stop object detection
 function stopCamAndDetect() {
     console.log("Stopping webcam and object detection...");
+    
     SetVideoInvisible();
     const stream = video.srcObject;
     if (stream) {
@@ -88,28 +86,39 @@ function stopCamAndDetect() {
         tracks.forEach(track => track.stop());
         video.srcObject = null;
     }
+
+    // Clear bounding boxes and labels
     clearBoundingBoxes();
-    isRunning = false;
+    isRunning = false;  // Stop the prediction loop
+    console.log("Webcam and object detection stopped.");
 }
 
-// Pulisce tutte le caselle di delimitazione e le etichette
+// Clear all bounding boxes and labels
 function clearBoundingBoxes() {
-    children.forEach(child => liveView.removeChild(child));
-    children = [];
+    for (let i = 0; i < children.length; i++) {
+        liveView.removeChild(children[i]);
+    }
+    children.splice(0);  // Clear the array
 }
 
-// Funzione per il rilevamento degli oggetti tramite webcam
+// Start object detection using the webcam feed
 function predictWebcam() {
     if (!video.videoWidth || !video.videoHeight) {
+        // Video not ready yet, so skip this frame and request the next one
         if (isRunning) {
             window.requestAnimationFrame(predictWebcam);
         }
         return;
     }
+
     model.detect(video).then(function(predictions) {
+        // Clear previous bounding boxes and labels
         clearBoundingBoxes();
+
+        // Draw bounding boxes for confident detections
         predictions.forEach(prediction => {
             if (prediction.score >= 0.55 && validObjects.includes(prediction.class)) {
+                // Create bounding box and label
                 const highlighter = document.createElement('div');
                 highlighter.classList.add('highlighter');
                 highlighter.style.left = `${prediction.bbox[0]}px`;
@@ -123,10 +132,14 @@ function predictWebcam() {
                 p.style.left = `${prediction.bbox[0]}px`;
                 p.style.top = `${prediction.bbox[1] - 20}px`;
 
+                // Add bounding box and label to liveView
                 liveView.appendChild(highlighter);
                 liveView.appendChild(p);
-                children.push(highlighter, p);
 
+                children.push(highlighter);
+                children.push(p);
+
+                // Announce object position and distance
                 const objectCenterX = prediction.bbox[0] + prediction.bbox[2] / 2;
                 const position = objectCenterX < video.videoWidth / 3 ? 'left' : 
                                  (objectCenterX > (2 * video.videoWidth) / 3 ? 'right' : 'center');
@@ -145,6 +158,7 @@ function predictWebcam() {
             }
         });
 
+        // Continue detecting if isRunning is true
         if (isRunning) {
             window.requestAnimationFrame(predictWebcam);
         }
@@ -153,47 +167,36 @@ function predictWebcam() {
     });
 }
 
-// Funzione per annunciare la posizione dell'oggetto
+// Announce object's position using speech synthesis
 function announcePosition(object, position) {
-    if (synth.speaking) {
-        console.log("SpeechSynthesis still speaking...");
-        return;
-    }
-
     const message = position === 'center' ? 
         `There is a ${object} in the center.` : 
         `There is a ${object} on your ${position}.`;
-
-    const utterance = new SpeechSynthesisUtterance(message);
-    utterance.lang = 'en-US';
     
-    // Assicurati che ci sia una voce caricata, altrimenti usa la voce predefinita
-    utterance.voice = voices.length ? voices[0] : null;
-
-    // Prova a parlare solo dopo che l'utente ha interagito (su iOS)
-    toggleButton.addEventListener('click', () => {
-        window.speechSynthesis.speak(utterance);
-    });
+    const speech = new SpeechSynthesisUtterance(message);
+    speech.lang = 'en-US';
+    window.speechSynthesis.speak(speech);
 }
 
-// Funzione per stimare la distanza
+// Estimate distance based on bounding box width
 function estimateDistance(bboxWidth, videoWidth) {
     const normalizedWidth = bboxWidth / videoWidth;
-    return 1 / normalizedWidth;
+    return 1 / normalizedWidth;  // Estimated distance in meters
 }
 
-// Riproduci un segnale acustico quando un oggetto è vicino
+// Play a beep sound when an object is close
 function playBeep() {
-    const beep = new Audio('beep.mp3');
+    const beep = new Audio('beep.mp3');  // Assuming beep.mp3 exists in the project
     beep.play();
 }
 
+// Toggle between starting and stopping the object detection
 toggleButton.addEventListener('click', function() {
     if (isRunning) {
-        stopCamAndDetect();
+        stopCamAndDetect();  // Stop both webcam and object detection
         toggleButton.innerText = 'Run';
     } else {
-        enableCamAndDetect();
+        enableCamAndDetect();  // Start both webcam and object detection
         toggleButton.innerText = 'Stop';
     }
 });
