@@ -185,9 +185,6 @@ nav ul li a:hover {
 }
 
 #webcam {
-  width: 100%;
-  max-width: 640px;
-  height: auto;
   border: 2px solid #333;
   border-radius: 4px;
 }
@@ -383,7 +380,7 @@ nav ul li a:hover {
   padding: 12px;
   border-radius: 20px;
   min-width: 115px;
-  margin-top: 12px;
+  margin-top: 6px;
   box-shadow: 5px 5px 20px -6px rgb(61 61 61 / 75%);
   border: none;
 }

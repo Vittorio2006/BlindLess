@@ -32,7 +32,7 @@ function SetVideoVisible() {
         const p = paragraphs[i];
         p.style.display = "none";
     }
-    document.body.style.overflow = "hidden";
+    // document.body.style.overflow = "hidden";
 }
 
 function SetVideoInvisible() {
@@ -43,7 +43,7 @@ function SetVideoInvisible() {
         const p = paragraphs[i];
         p.style.display = "block";
     }
-    document.body.style.overflow = "auto";
+    // document.body.style.overflow = "auto";
 }
 
 SetVideoInvisible();
