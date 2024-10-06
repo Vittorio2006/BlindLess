@@ -2,7 +2,6 @@ const video = document.getElementById('webcam');
 const toggleButton = document.getElementById('toggleButton');
 const liveView = document.getElementById('liveView');
 const paragraphs = document.getElementsByClassName("demo-p");
-
 const header = document.getElementById("demo-header");
 
 let model = undefined;
@@ -32,7 +31,6 @@ function SetVideoVisible() {
         const p = paragraphs[i];
         p.style.display = "none";
     }
-    // document.body.style.overflow = "hidden";
 }
 
 function SetVideoInvisible() {
@@ -43,7 +41,6 @@ function SetVideoInvisible() {
         const p = paragraphs[i];
         p.style.display = "block";
     }
-    // document.body.style.overflow = "auto";
 }
 
 SetVideoInvisible();
@@ -115,29 +112,14 @@ function predictWebcam() {
         // Clear previous bounding boxes and labels
         clearBoundingBoxes();
 
+        // Get the video element dimensions for scaling
+        const videoRect = video.getBoundingClientRect();
+
         // Draw bounding boxes for confident detections
         predictions.forEach(prediction => {
             if (prediction.score >= 0.55 && validObjects.includes(prediction.class)) {
-                // Create bounding box and label
-                const highlighter = document.createElement('div');
-                highlighter.classList.add('highlighter');
-                highlighter.style.left = `${prediction.bbox[0]}px`;
-                highlighter.style.top = `${prediction.bbox[1]}px`;
-                highlighter.style.width = `${prediction.bbox[2]}px`;
-                highlighter.style.height = `${prediction.bbox[3]}px`;
-
-                const p = document.createElement('p');
-                p.classList.add('prediction-label');
-                p.innerText = `${prediction.class} - ${(prediction.score * 100).toFixed(2)}% confidence`;
-                p.style.left = `${prediction.bbox[0]}px`;
-                p.style.top = `${prediction.bbox[1] - 20}px`;
-
-                // Add bounding box and label to liveView
-                liveView.appendChild(highlighter);
-                liveView.appendChild(p);
-
-                children.push(highlighter);
-                children.push(p);
+                // Create and add bounding box
+                createBoundingBox(prediction, videoRect);
 
                 // Announce object position and distance
                 const objectCenterX = prediction.bbox[0] + prediction.bbox[2] / 2;
@@ -165,6 +147,40 @@ function predictWebcam() {
     }).catch(err => {
         console.error("Error during object detection: ", err);
     });
+}
+
+// Create a bounding box and add it to the liveView
+function createBoundingBox(prediction, videoRect) {
+    const [x, y, width, height] = prediction.bbox;
+
+    // Scale the bounding box coordinates relative to the video element dimensions
+    const scaledX = videoRect.left + (x * videoRect.width / video.videoWidth);
+    const scaledY = videoRect.top + (y * videoRect.height / video.videoHeight);
+    const scaledWidth = width * videoRect.width / video.videoWidth;
+    const scaledHeight = height * videoRect.height / video.videoHeight;
+
+    // Create the div for the bounding box
+    const highlighter = document.createElement('div');
+    highlighter.classList.add('highlighter');
+    highlighter.style.left = `${scaledX}px`;
+    highlighter.style.top = `${scaledY}px`;
+    highlighter.style.width = `${scaledWidth}px`;
+    highlighter.style.height = `${scaledHeight}px`;
+    highlighter.style.position = 'absolute';
+
+    // Create label for prediction
+    const p = document.createElement('p');
+    p.classList.add('prediction-label');
+    p.innerText = `${prediction.class} - ${(prediction.score * 100).toFixed(2)}% confidence`;
+    p.style.left = `${scaledX}px`;
+    p.style.top = `${scaledY - 20}px`;
+
+    // Add bounding box and label to liveView
+    liveView.appendChild(highlighter);
+    liveView.appendChild(p);
+
+    children.push(highlighter);
+    children.push(p);
 }
 
 // Announce object's position using speech synthesis
