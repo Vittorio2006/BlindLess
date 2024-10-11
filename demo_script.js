@@ -4,6 +4,8 @@ const liveView = document.getElementById('liveView');
 const paragraphs = document.getElementsByClassName("demo-p");
 const header = document.getElementById("demo-header");
 
+let isRunButtonEnabled=false;
+
 let model = undefined;
 let isRunning = false;
 let children = [];  // To store dynamically created bounding boxes and labels
@@ -23,6 +25,8 @@ const videoConstraints = {
     }
 };
  
+disableRunButton();
+
 function SetVideoVisible() {
     video.style.display = "block";
     header.style.display = "none";
@@ -48,7 +52,7 @@ SetVideoInvisible();
 // Load the COCO-SSD model
 cocoSsd.load().then(function(loadedModel) {
     model = loadedModel;
-    console.log("Model loaded.");
+    enableRunButton();
 });
 
 // Enable the webcam and start object detection
@@ -216,3 +220,13 @@ toggleButton.addEventListener('click', function() {
         toggleButton.innerText = 'Stop';
     }
 });
+
+function enableRunButton() {
+    toggleButton.style.backgroundColor='#0b0a0a';
+    isRunButtonEnabled=true;
+}
+
+function disableRunButton() {
+    toggleButton.style.backgroundColor = '#5f5f5f';
+    isRunButtonEnabled=false;
+}
