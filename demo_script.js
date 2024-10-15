@@ -222,11 +222,17 @@ toggleButton.addEventListener('click', function() {
 });
 
 function enableRunButton() {
-    toggleButton.style.backgroundColor='#0b0a0a';
-    isRunButtonEnabled=true;
+    toggleButton.style.backgroundColor = '#0b0a0a';
+    isRunButtonEnabled = true;
+    
+    // Nascondi la rotellina quando il bottone è attivo
+    document.getElementById('spinner').style.display = 'none';
 }
 
 function disableRunButton() {
     toggleButton.style.backgroundColor = '#5f5f5f';
-    isRunButtonEnabled=false;
+    isRunButtonEnabled = false;
+
+    // Mostra la rotellina quando il bottone è disabilitato
+    document.getElementById('spinner').style.display = 'inline-block';
 }
